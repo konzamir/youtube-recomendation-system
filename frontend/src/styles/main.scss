@@ -1,0 +1,12 @@
+@import "./header_footer";
+@import "./search.scss";
+@import "./forms.scss";
+
+.big-process-layout{
+    height: 290px !important;
+    // width: 290px;
+}
+.big-process-dialog, .big-process-dialog:active,
+.big-process-dialog:hover{
+    box-shadow: none;
+}
