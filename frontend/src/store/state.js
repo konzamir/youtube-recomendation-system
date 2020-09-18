@@ -12,7 +12,10 @@ const state = {
         nextPageToken:  null,
         prevPageToken:  null
     },
-    videos:         []
+    videos:         [],
+    loginModal: false,
+    registerModal: false,
+    userInfoModal: false
 }
 
 export default state;

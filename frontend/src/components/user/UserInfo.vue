@@ -2,7 +2,7 @@
     <v-dialog
         v-model="dialog"
         content-class="form-style"
-        :persistent="isLoading"
+        persistent
         width="400"
     >
         <v-card class="elevation-12">
@@ -82,9 +82,9 @@
         data: () => {
             return {
                 errors: [],
-                username: "",
-                dialog: false,
-                email: "",
+                username: "tempo",
+                // dialog: false,
+                email: "test@test.com",
             }
         },
         computed:{
@@ -93,6 +93,9 @@
             },
             featuredCount() {
                 return this.$store.state.user.links.length;
+            },
+            dialog() {
+                return this.$store.state.userInfoModal;
             }
         },
         methods: {
@@ -116,7 +119,8 @@
                 }
             },
             close() {
-                this.dialog = false;
+                // this.dialog = false;
+                this.$store.state.userInfoModal = false;
             },
             logout() {
                 this.$refs.confirmation.show();

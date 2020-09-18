@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_youmed
+    volumes:
+      - ./.data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    networks:
+      - youmed
+    command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_general_ci' ]
+
+networks:
+  youmed:
+    driver: bridge
+
+volumes:
+  mysql:

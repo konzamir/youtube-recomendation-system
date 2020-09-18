@@ -47,7 +47,15 @@ const actions = {
         })
     },
     loginAction({dispatch, commit, state}, payload){
-        commit('setLoadingStatus', true);
+        // commit('setLoadingStatus', true);
+        return new Promise((resolve, reject) => {resolve(
+            {data: {data: {
+                token:          '123',
+                username:       'test',
+                email:          'test@test.com',
+                links:          []
+            }}}
+        )})
         return axios({
             method: 'post',
             url: `${urlEntripoint}/auth/login/`,
@@ -63,6 +71,7 @@ const actions = {
             'Authorization': `Token ${token}`,
             ...defaultHeaders
         };
+        return {}
 
         return axios({
             method: 'post',

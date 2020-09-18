@@ -69,7 +69,7 @@
             username: "",
             password: "",
             valid: true,
-            dialog: false,
+            // dialog: false,
             passwordRules: [
               value => !!value || 'Required.',
               value => {
@@ -86,6 +86,9 @@
       computed:{
         isLoading(){
           return this.$store.state.isLoading;
+        },
+        dialog() {
+          return this.$store.state.loginModal;
         }
       },
       watch: {
@@ -99,10 +102,11 @@
         close() {
           this.$refs.form.resetValidation();
           this.errors = [];
-          this.dialog = false;
+          // this.dialog = false;
+          this.$store.state.loginModal = false;
         },
         show() {
-            this.dialog = !this.dialog;
+            // this.dialog = !this.dialog;
         },
         handleData() {
           if (this.$refs.form.validate()){
@@ -111,6 +115,7 @@
               password: this.password
             })
             .then((response) => {
+              console.log(response.data.data)
                 this.$store.commit("setUser", response.data.data);
                 this.$store.commit('setLoadingStatus', false);
                 this.close()
@@ -118,8 +123,9 @@
                 this.$parent.$refs.successDialog.show('User logined!');
             })
             .catch((error) => {
-                this.errors = error.response.data.errors;
-                this.$store.commit('setLoadingStatus', false);
+              console.log(error, "+++")
+                // this.errors = error.response.data.errors;
+                // this.$store.commit('setLoadingStatus', false);
             })
             
           }

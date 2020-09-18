@@ -16,6 +16,26 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+import asyncio
+from django.utils.decorators import classonlymethod
+from django.views.generic import View
+from django.http import JsonResponse
+
+
+class TempoView(View):
+
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        view = super().as_view(**initkwargs)
+        view._is_coroutine = asyncio.coroutines._is_coroutine
+        return view
+
+    async def get(self, *args, **kwargs):
+        # await asyncio.sleep(0.5)
+        return JsonResponse({})
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', TempoView.as_view())
 ]

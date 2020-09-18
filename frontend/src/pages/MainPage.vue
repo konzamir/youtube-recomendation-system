@@ -1,6 +1,5 @@
 <template>
 <div>
-    <main-header/>
     <v-container  >
         <big-search v-on:startSearch="startSearch" ref="bigSearch"/>
         <ul>
@@ -48,13 +47,7 @@
         </div>
     </v-container>
     <media-element ref="media"/>
-    <big-process ref="bigProcess" />
-    <login-form ref="loginForm" />
-    <register-form ref="registerForm" />
-    <user-info ref="userInfo" />
-    <error-dialog ref="errorDialog" />
-    <success-dialog ref="successDialog" />
-    <success-alert ref="successAlert" />
+    
 
   </div>  
 </template>
@@ -63,14 +56,7 @@
     import BigSearch from '@/components/search/BigSearch';
     import SearchItem from '@/components/search/SearchItem';
     import MediaElement from '@/components/search/MediaElement';
-    import Header from '@/components/main/Header';
-    import LoginForm from "@/components/user/LoginForm";
-    import RegisterForm from "@/components/user/RegisterForm";
-    import UserInfo from "@/components/user/UserInfo";
-    import BigProcess from "@/components/progress/BigProcess";
-    import ErrorDialog from '@/components/dialogs/ErrorDialog';
-    import SuccessDialog from '@/components/dialogs/SuccessDialog';
-    import SuccessAlert from '@/components/dialogs/SuccessAlert';
+    
 
     export default {
         data: () => {
@@ -78,10 +64,16 @@
                 displayReturnButtonValue:   200,
                 displayReturnButton:        false,
                 offsetTop:                  0,
-                items:                      [],
+                items:                      [
+                    {
+                        title: 'test',
+                        video_id: '2c1Jyaj-IZ8',
+                        preview_url: 'https://i.ytimg.com/vi/ST8pJISKqaw/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLBPniGjOcd5M_EOjv6clPZ0vQgttg',
+                    },
+                ],
                 errors:                     [],
                 query:                      "",
-                fetched:                    false,
+                fetched:                    true,
                 currPage:                   null,
                 nextPage:                   null,
                 prevPage:                   null,
@@ -196,14 +188,6 @@
             'big-search':       BigSearch,
             'search-item':      SearchItem,
             'media-element':    MediaElement,
-            'login-form':       LoginForm,
-            'register-form':    RegisterForm,
-            'user-info':        UserInfo,
-            'main-header':      Header,
-            'big-process':      BigProcess,
-            'error-dialog':     ErrorDialog,
-            'success-dialog':   SuccessDialog,
-            'success-alert':    SuccessAlert,
         },
         mounted() {
             if (this.$route.query.q) {

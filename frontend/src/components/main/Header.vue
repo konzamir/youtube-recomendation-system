@@ -31,13 +31,13 @@
     },
     methods: {
       showLoginForm() {
-        this.$parent.$refs.loginForm.show();
+        this.$store.state.loginModal = true
       },
       showRegisterForm() {
-        this.$parent.$refs.registerForm.show();
+        this.$store.state.registerModal = true
       },
       showUserInfo() {
-        this.$parent.$refs.userInfo.show();
+        this.$store.state.userInfoModal = true
       }
     },
     components: {

@@ -9,6 +9,9 @@
 
 *.log*
 
+.data/
+.data/*
+
 # Python
 .venv/
 .venv/*
