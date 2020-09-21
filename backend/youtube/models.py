@@ -3,9 +3,7 @@ from enum import Enum
 from django.db import models
 from django.contrib.auth.models import User
 
-
-class Source(models.Model):
-    name = models.CharField(max_length=64)
+from filters.models import Source, Destination, VideoType
 
 
 class Channel(models.Model):
@@ -30,14 +28,6 @@ class YoutubeData(models.Model):
     image_preview = models.ForeignKey(
         to=ImagePreview, on_delete=models.CASCADE
     )
-
-
-class VideoType(models.Model):
-    name = models.CharField(max_length=64)
-
-
-class Destination(models.Model):
-    name = models.CharField(max_length=64)
 
 
 class VideoStatusChoices(Enum):
@@ -71,21 +61,6 @@ class Video(models.Model):
 
     updated_at = models.DateTimeField(db_index=True, auto_now=True)
     created_at = models.DateTimeField(db_index=True, auto_now_add=True)
-
-
-class UserMark(models.Model):
-    video = models.ForeignKey(
-        to=Video, on_delete=models.CASCADE
-    )
-    user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE
-    )
-    information_quality = models.IntegerField()
-    medical_practice_quality = models.IntegerField()
-    description_quality = models.IntegerField()
-
-    def __str__(self):
-        return f'{self.user.id} -> {self.video.title}'
 
 
 class Featured(models.Model):
