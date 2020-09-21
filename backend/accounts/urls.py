@@ -1,12 +1,12 @@
-from django.conf.urls import url, include
-from .views import RegisterAPIView, LoginAPIView, GetUserAPIView, LogoutAPIView
-from knox import views as knox_views
+from django.urls import path, include
+
+from accounts.views import RegisterAPIView, LoginAPIView, GetUserAPIView, LogoutAPIView
 
 
 urlpatterns = [
-    url(r'api/auth/register/', RegisterAPIView.as_view()),
-    url(r'api/auth/login/', LoginAPIView.as_view()),
-    url(r'api/auth/logout/', LogoutAPIView.as_view(), name='knox-logout'),
-    url(r'api/auth', include('knox.urls')),
-    url(r'api/auth/user/', GetUserAPIView.as_view()),
+    path('register/', RegisterAPIView.as_view()),
+    path('login/', LoginAPIView.as_view()),
+    path('logout/', LogoutAPIView.as_view(), name='knox-logout'),
+    path('auth', include('knox.urls')),
+    path('user/', GetUserAPIView.as_view()),
 ]

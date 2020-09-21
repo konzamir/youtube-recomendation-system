@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
-from ..serializers import UserSerializer, LoginSerializer
+from ..serializers import UserSerializer
 from youtube_media.models import Featured
 
 
@@ -18,7 +18,7 @@ class GetUserAPIView(generics.RetrieveAPIView):
 
         featured_list = [
             x.link.video_id for x in Featured.objects.filter(user=request.user)
-        ]        
+        ]
 
         return Response({
             'data': {

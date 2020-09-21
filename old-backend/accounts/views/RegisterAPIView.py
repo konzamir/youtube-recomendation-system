@@ -1,8 +1,7 @@
-from rest_framework import generics, permissions, exceptions
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 from ..serializers import UserSerializer, RegisterSerializer
-from youtube_media.models import Featured
 
 
 class RegisterAPIView(generics.GenericAPIView):
@@ -16,10 +15,6 @@ class RegisterAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-
-        # featured_list = [
-        #     x.link.video_id for x in Featured.objects.filter(user=user)
-        # ]
 
         return Response({
             "data": {
