@@ -20,6 +20,7 @@ class Process(models.Model):
     )
     youtube_video_group = models.CharField(max_length=64, null=True, default=None)
     in_progress = models.BooleanField(default=False)
+    search_data = models.TextField(null=False)
 
     user = models.ForeignKey(
         to=User, on_delete=models.CASCADE
