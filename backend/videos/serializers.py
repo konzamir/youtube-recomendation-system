@@ -1,5 +1,41 @@
 from rest_framework import serializers
-from videos.models import UserMark
+
+from videos.models import UserMark, Channel, ImagePreview, YoutubeData, \
+    Video
+from filters.serializers import DestinationSerializer, VideoTypeSerializer, SourceSerializer
+
+
+class ChannelSerializer(serializers.ModelSerializer):
+    source = SourceSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Channel
+        fields = '__all__'
+
+
+class ImagePreviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImagePreview
+        fields = '__all__'
+
+
+class YoutubeDataSerializer(serializers.ModelSerializer):
+    image_preview = ImagePreviewSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = YoutubeData
+        fields = '__all__'
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    video_type = VideoTypeSerializer(many=False, read_only=True)
+    channel = ChannelSerializer(many=False)
+    youtube_data = YoutubeDataSerializer(many=False)
+    destination = DestinationSerializer(many=False)
+
+    class Meta:
+        model = Video
+        fields = '__all__'
 
 
 class UserMarkSerializer(serializers.ModelSerializer):
@@ -19,8 +55,8 @@ class UserMarkSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        if attrs.get('information_quality') is None or \
-                attrs.get('medical_practice_quality') is None or \
+        if attrs.get('information_quality') is None and \
+                attrs.get('medical_practice_quality') is None and \
                 attrs.get('description_quality') is None:
             raise serializers.ValidationError(
                 'information_quality or medical_practice_quality '

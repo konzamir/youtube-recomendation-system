@@ -61,10 +61,15 @@ class LoginAPIView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
 
+        featured_list = [
+            x.video for x in Featured.objects.filter(user=request.user.id)
+        ]
+
         return Response({
             "data": {
                 "user": UserSerializer(user, context=self.get_serializer_context()).data,
                 "token": f'{AuthToken.objects.create(user)[1]}',
+                'links': featured_list
             }
         })
 

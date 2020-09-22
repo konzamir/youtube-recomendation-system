@@ -81,9 +81,9 @@ class UserMark(models.Model):
     user = models.ForeignKey(
         to=User, on_delete=models.CASCADE
     )
-    information_quality = models.IntegerField()
-    medical_practice_quality = models.IntegerField()
-    description_quality = models.IntegerField()
+    information_quality = models.IntegerField(null=True)
+    medical_practice_quality = models.IntegerField(null=True)
+    description_quality = models.IntegerField(null=True)
 
     def __str__(self):
         return f'{self.user.id} -> {self.video.title}'
