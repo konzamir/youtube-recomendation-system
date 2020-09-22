@@ -1,3 +1,5 @@
 from django.contrib import admin
+from accounts.models import UserMark
 
-# Register your models here.
+
+admin.site.register(UserMark)

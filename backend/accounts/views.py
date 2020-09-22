@@ -4,8 +4,8 @@ from knox.models import AuthToken
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
-from accounts.serializers import UserSerializer, LoginSerializer, RegisterSerializer
 
+from accounts.serializers import UserSerializer, LoginSerializer, RegisterSerializer, UserMarkSerializer
 from youtube.models import Featured
 
 
@@ -16,7 +16,7 @@ class GetUserAPIView(generics.GenericAPIView):
     ]
     serializer_class = UserSerializer
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
@@ -56,7 +56,7 @@ class LoginAPIView(generics.GenericAPIView):
         permissions.AllowAny
     ]
 
-    def post(self, request, *a, **kw):
+    def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
@@ -88,7 +88,7 @@ class RegisterAPIView(generics.GenericAPIView):
         permissions.AllowAny
     ]
 
-    def post(self, request, *a, **k):
+    def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -100,3 +100,21 @@ class RegisterAPIView(generics.GenericAPIView):
                 'links': []
             }
         })
+
+
+class UserMarkAPIView(generics.GenericAPIView):
+    serializer_class = UserMarkSerializer
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_mark = serializer.save()
+
+        return Response({
+            'data': {
+                'user_mark': self.get_serializer(user_mark, context=self.get_serializer_context()).data,
+            }
+        }, status=status.HTTP_202_ACCEPTED)
