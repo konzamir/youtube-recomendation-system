@@ -20,17 +20,8 @@ def drf_custom_exception_handler(exc, context):
 
         data = {
             "data": {},
-            "errors": []
+            "errors": exc.detail
         }
-
-        if isinstance(exc.detail, (list,)):
-            data['errors'] = exc.detail
-        elif isinstance(exc.detail, (dict,)):
-            for x in exc.detail.values():
-                for y in x:
-                    data['errors'].append(y)
-        else:
-            data['errors'] = [exc.detail]
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)

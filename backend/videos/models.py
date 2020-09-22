@@ -1,5 +1,3 @@
-from enum import Enum
-
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -30,17 +28,15 @@ class YoutubeData(models.Model):
     )
 
 
-class VideoStatusChoices(Enum):
-    NOT_CHECKED = 'Video was not checked'
-    QUALITATIVE = 'Video with high quality'
-    NON_QUALITATIVE = 'Video with low quality'
-
-
 class Video(models.Model):
-    status = models.CharField(
-        max_length=5,
-        choices=[(item, item.value) for item in VideoStatusChoices],
-        default=VideoStatusChoices.NOT_CHECKED
+    class VideoStatus(models.IntegerChoices):
+        NOT_CHECKED = 0
+        QUALITATIVE = 1
+        NON_QUALITATIVE = 2
+
+    status = models.IntegerField(
+        choices=VideoStatus.choices,
+        default=VideoStatus.NOT_CHECKED.value
     )
     practical_usage_availability = models.BooleanField()
     title = models.CharField(max_length=256)
