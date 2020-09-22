@@ -7,17 +7,16 @@ from rest_framework import status
 from accounts.serializers import UserSerializer, LoginSerializer, RegisterSerializer
 
 from youtube.models import Featured
-from helpers.async_view_mixin import AsyncViewMixin
 
 
-class GetUserAPIView(AsyncViewMixin, generics.RetrieveAPIView):
+class GetUserAPIView(generics.GenericAPIView):
 
     permission_classes = [
         permissions.IsAuthenticated,
     ]
     serializer_class = UserSerializer
 
-    async def retrieve(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
@@ -30,19 +29,34 @@ class GetUserAPIView(AsyncViewMixin, generics.RetrieveAPIView):
                 'user': serializer.data,
                 'links': featured_list
             }
-        }, status=status.HTTP_202_ACCEPTED)
+        }, status=status.HTTP_200_OK)
 
-    def get_object(self):
-        return self.request.user
+    def put(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response({
+            'data': {
+                'user': serializer.data,
+            }
+        }, status=status.HTTP_200_OK)
 
 
-class LoginAPIView(AsyncViewMixin, generics.GenericAPIView):
+class LoginAPIView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permissions_classes = [
         permissions.AllowAny
     ]
 
-    async def post(self, request, *a, **kw):
+    def post(self, request, *a, **kw):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
@@ -55,9 +69,9 @@ class LoginAPIView(AsyncViewMixin, generics.GenericAPIView):
         })
 
 
-class LogoutAPIView(AsyncViewMixin, views.LogoutView):
+class LogoutAPIView(views.LogoutView):
 
-    async def post(self, request, format=None):
+    def post(self, request, format=None):
         request._auth.delete()
         user_logged_out.send(sender=request.user.__class__, request=request, user=request.user)
         return Response({
@@ -67,14 +81,14 @@ class LogoutAPIView(AsyncViewMixin, views.LogoutView):
         }, status=status.HTTP_200_OK)
 
 
-class RegisterAPIView(AsyncViewMixin, generics.GenericAPIView):
+class RegisterAPIView(generics.GenericAPIView):
 
     serializer_class = RegisterSerializer
     permission_classes = [
         permissions.AllowAny
     ]
 
-    async def post(self, request, *a, **k):
+    def post(self, request, *a, **k):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
