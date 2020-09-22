@@ -1,6 +1,7 @@
 from django.urls import path, include
 
-from accounts.views import RegisterAPIView, LoginAPIView, GetUserAPIView, LogoutAPIView
+from accounts.views import RegisterAPIView, LoginAPIView, GetUserAPIView, \
+    LogoutAPIView
 
 
 urlpatterns = [

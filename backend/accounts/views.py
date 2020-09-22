@@ -5,8 +5,8 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
 
-from accounts.serializers import UserSerializer, LoginSerializer, RegisterSerializer, UserMarkSerializer
-from youtube.models import Featured
+from accounts.serializers import UserSerializer, LoginSerializer, RegisterSerializer
+from videos.models import Featured
 
 
 class GetUserAPIView(generics.GenericAPIView):
@@ -100,21 +100,3 @@ class RegisterAPIView(generics.GenericAPIView):
                 'links': []
             }
         })
-
-
-class UserMarkAPIView(generics.GenericAPIView):
-    serializer_class = UserMarkSerializer
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
-
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user_mark = serializer.save()
-
-        return Response({
-            'data': {
-                'user_mark': self.get_serializer(user_mark, context=self.get_serializer_context()).data,
-            }
-        }, status=status.HTTP_202_ACCEPTED)

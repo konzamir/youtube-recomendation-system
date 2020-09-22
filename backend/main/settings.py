@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'filters',
     'processes',
-    'youtube'
+    'videos'
 ]
 
 MIDDLEWARE = [

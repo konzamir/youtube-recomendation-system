@@ -12,12 +12,20 @@ class FiltersAPIView(generics.GenericAPIView):
     serializer_class = FilterDataSerializer
 
     def get(self, request):
-        queryset = VideoType.objects | Destination.objects | Source.objects
-        print(queryset.all())
-        serialized_data = self.get_serializer(data=queryset.all(), many=True)
+        # TODO:::replace with a single request
+        video_types = self.get_serializer(data=VideoType.objects.all(), many=True)
+        video_types.is_valid()
+
+        destination = self.get_serializer(data=Destination.objects.all(), many=True)
+        destination.is_valid()
+
+        source = self.get_serializer(data=Source.objects.all(), many=True)
+        source.is_valid()
 
         return Response({
             'data': {
-                'tempo': serialized_data
+                'video_type': video_types.data,
+                'destination': destination.data,
+                'source': source.data
             }
         }, status=status.HTTP_200_OK)

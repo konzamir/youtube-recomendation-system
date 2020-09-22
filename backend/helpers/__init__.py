@@ -1,4 +1,4 @@
-from .YoutubeAPIConnector import YoutubeAPIConnector
+from .youtube_api_connector import YoutubeAPIConnector
 from .drf_custom_exception_handler import drf_custom_exception_handler
 
 

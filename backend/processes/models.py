@@ -3,7 +3,7 @@ from enum import Enum
 from django.db import models
 from django.contrib.auth.models import User
 
-from youtube.models import Video
+from videos.models import Video
 
 
 class ProcessStatusEnum(Enum):
