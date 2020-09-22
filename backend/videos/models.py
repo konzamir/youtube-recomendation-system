@@ -76,3 +76,18 @@ class Featured(models.Model):
 
     def __str__(self):
         return f'{self.user.id} -> {self.video.title}'
+
+
+class UserMark(models.Model):
+    video = models.ForeignKey(
+        to=Video, on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        to=User, on_delete=models.CASCADE
+    )
+    information_quality = models.IntegerField()
+    medical_practice_quality = models.IntegerField()
+    description_quality = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.user.id} -> {self.video.title}'
