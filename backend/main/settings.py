@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'accounts',
     'filters',
     'processes',
-    'videos'
+    'videos',
+    'async_tasks'
 ]
 
 MIDDLEWARE = [
@@ -146,5 +147,5 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = ('http://localhost:80', )
 
-YOUTUBE_API_KEY = ''
+YOUTUBE_API_KEY = 'AIzaSyAi_XaCVodevlxUe8PBTGRQ8wKyT_3cOtw'
 ITEMS_PER_PAGE = 25
