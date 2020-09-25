@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from accounts.views import RegisterAPIView, LoginAPIView, GetUserAPIView, \
-    LogoutAPIView
+    LogoutAPIView, YoutubeAuthAPIView
 
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('logout/', LogoutAPIView.as_view(), name='knox-logout'),
     path('auth', include('knox.urls')),
     path('user/', GetUserAPIView.as_view()),
+    path('youtubeAuth/', YoutubeAuthAPIView.as_view(), name='confirm-youtube-auth')
 ]
