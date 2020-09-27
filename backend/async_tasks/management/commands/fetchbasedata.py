@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = ''
+    help = 'This command is fetching the base video data.'
 
     def _fetch_videos(self, processes):
         try:
