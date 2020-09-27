@@ -79,16 +79,17 @@ class Command(BaseCommand):
                         process_id=p.id
                     )
 
-                new_process, _ = Process.objects.get_or_create(
-                    youtube_video_group=videos_data['nextPageToken'],
-                    search_data=p.search_data,
-                    user_id=p.user_id,
-                    prev_process=p.id
-                )
-                Process.objects.filter(id=p.id).update(
-                    next_process=new_process.id,
-                    status=Process.ProcessStatus.GETTING_FULL_DATA
-                )
+                if videos_data.get('nextPageToken'):
+                    new_process, _ = Process.objects.get_or_create(
+                        youtube_video_group=videos_data['nextPageToken'],
+                        search_data=p.search_data,
+                        user_id=p.user_id,
+                        prev_process=p.id
+                    )
+                    Process.objects.filter(id=p.id).update(
+                        next_process=new_process.id,
+                        status=Process.ProcessStatus.GETTING_FULL_DATA
+                    )
 
             transaction.commit()
         except Exception as exc:
@@ -99,9 +100,7 @@ class Command(BaseCommand):
         transaction.set_autocommit(False)
 
         while True:
-            processes = Process.objects.select_related(
-                'user'
-            ).prefetch_related(
+            processes = Process.objects.prefetch_related(
                 'user__youtubecredentials'
             ).filter(
                 status=Process.ProcessStatus.WAITING_FOR_START
@@ -113,4 +112,5 @@ class Command(BaseCommand):
             time.sleep(1)
 
         transaction.set_autocommit(True)
+
         return
