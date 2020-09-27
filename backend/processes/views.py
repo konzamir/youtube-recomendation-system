@@ -16,10 +16,10 @@ class ProcessAPIView(generics.GenericAPIView):
 
         serializer = self.get_serializer(data=process_data)
         serializer.is_valid(raise_exception=True)
-        user_mark = serializer.save()
+        process = serializer.save()
 
         return Response({
             'data': {
-                'user_mark': self.get_serializer(user_mark, context=self.get_serializer_context()).data,
+                'process': self.get_serializer(process, context=self.get_serializer_context()).data,
             }
         }, status=status.HTTP_202_ACCEPTED)

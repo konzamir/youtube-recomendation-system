@@ -5,9 +5,10 @@ from filters import models as filters_models
 
 
 class Channel(models.Model):
+    youtube_id = models.CharField(max_length=128)
     name = models.CharField(max_length=64)
     source = models.ForeignKey(
-        to=filters_models.Source, on_delete=models.CASCADE
+        to=filters_models.Source, on_delete=models.CASCADE, null=True
     )
 
 
@@ -20,10 +21,10 @@ class ImagePreview(models.Model):
 class YoutubeData(models.Model):
     etag = models.CharField(max_length=128)
     pub_date = models.DateTimeField()
-    video_hash = models.CharField(max_length=64)
+    video_hash = models.CharField(max_length=64, unique=True)
     positive_mark_number = models.IntegerField(default=0)
     negative_mark_number = models.IntegerField(default=0)
-    image_preview = models.ForeignKey(
+    image_preview = models.OneToOneField(
         to=ImagePreview, on_delete=models.CASCADE
     )
 
@@ -38,25 +39,28 @@ class Video(models.Model):
         choices=VideoStatus.choices,
         default=VideoStatus.NOT_CHECKED.value
     )
-    practical_usage_availability = models.BooleanField()
+    practical_usage_availability = models.BooleanField(null=True)
     title = models.CharField(max_length=256)
     description = models.TextField()
 
     video_type = models.ForeignKey(
-        to=filters_models.VideoType, on_delete=models.CASCADE
+        to=filters_models.VideoType, on_delete=models.CASCADE, null=True
     )
     channel = models.ForeignKey(
         to=Channel, on_delete=models.CASCADE
     )
-    youtube_data = models.ForeignKey(
+    youtube_data = models.OneToOneField(
         to=YoutubeData, on_delete=models.CASCADE
     )
     destination = models.ForeignKey(
-        to=filters_models.Destination, on_delete=models.CASCADE
+        to=filters_models.Destination, on_delete=models.CASCADE, null=True
     )
 
     updated_at = models.DateTimeField(db_index=True, auto_now=True)
     created_at = models.DateTimeField(db_index=True, auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Featured(models.Model):
