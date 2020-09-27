@@ -25,16 +25,16 @@ class Command(BaseCommand):
         try:
             for p in processes:
                 credentials = Credentials(
-                    token=p.token,
-                    refresh_token=p.refresh_token,
-                    token_uri=p.token_uri,
-                    client_id=p.client_id,
-                    client_secret=p.client_secret,
-                    expiry=p.expiry.astimezone(pytz.UTC).replace(tzinfo=None)
+                    token=p.user.youtubecredentials.token,
+                    refresh_token=p.user.youtubecredentials.refresh_token,
+                    token_uri=p.user.youtubecredentials.token_uri,
+                    client_id=p.user.youtubecredentials.client_id,
+                    client_secret=p.user.youtubecredentials.client_secret,
+                    expiry=p.user.youtubecredentials.expiry.astimezone(pytz.UTC).replace(tzinfo=None)
                 )
                 credentials = is_user_youtube_auth_valid(credentials)
                 if not credentials:
-                    YoutubeCredentials.objects.filter(id=p.youtube_creds_id).delete()
+                    YoutubeCredentials.objects.filter(id=p.user.youtubecredentials.id).delete()
                     logger.warning('YouTube credentials were invalid for user with id %s', p.user_id)
 
                     continue
@@ -99,17 +99,13 @@ class Command(BaseCommand):
         transaction.set_autocommit(False)
 
         while True:
-            processes = Process.objects.raw(
-                f'''
-                select *, {YoutubeCredentials._meta.db_table}.id as youtube_creds_id
-                from {Process._meta.db_table}
-                cross join {YoutubeCredentials._meta.db_table}
-                    on {Process._meta.db_table}.user_id = {YoutubeCredentials._meta.db_table}.user_id
-                where status in ({Process.ProcessStatus.WAITING_FOR_START}, {Process.ProcessStatus.STARTED})
-                order by created_at, updated_at
-                limit {PACK_SIZE}
-                '''
-            )
+            processes = Process.objects.select_related(
+                'user'
+            ).prefetch_related(
+                'user__youtubecredentials'
+            ).filter(
+                status=Process.ProcessStatus.WAITING_FOR_START
+            ).all()[:PACK_SIZE]
 
             if processes:
                 self._fetch_videos(processes)
