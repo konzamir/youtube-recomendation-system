@@ -1,7 +1,7 @@
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 
-from filters.models import Tag, Source, Category
+from filters.models import Source, Category
 from filters.serializers import FilterDataSerializer
 
 

@@ -6,17 +6,16 @@ from videos.models import Video
 
 class Process(models.Model):
     class ProcessStatus(models.IntegerChoices):
-        WAITING_FOR_START = 0
-        STARTED = 1
-        GETTING_BASE_DATA = 2
-        GETTING_FULL_DATA = 3
-        FILTERING_DATA = 4
-        SUCCESS = 5
-        INVALID = 6
+        # TODO:::add current states for each part of processing
+        WAITING_FOR_FETCHING_BASE_DATA = 0
+        WAITING_FOR_FETCHING_FULL_DATA = 1
+        WAITING_FOR_FILTERING_DATA = 2
+        SUCCESS = 3
+        INVALID = 4
 
     status = models.IntegerField(
         choices=ProcessStatus.choices,
-        default=ProcessStatus.WAITING_FOR_START
+        default=ProcessStatus.WAITING_FOR_FETCHING_BASE_DATA
     )
     youtube_video_group = models.CharField(max_length=64, null=True, default=None)
     in_progress = models.BooleanField(default=False)

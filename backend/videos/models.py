@@ -7,6 +7,10 @@ from filters import models as filters_models
 class Channel(models.Model):
     youtube_id = models.CharField(max_length=128)
     name = models.CharField(max_length=64)
+    country = models.CharField(max_length=4)
+    description = models.TextField()
+    keywords = models.TextField()
+
     source = models.ForeignKey(
         to=filters_models.Source, on_delete=models.CASCADE, null=True
     )
@@ -35,9 +39,11 @@ class YoutubeData(models.Model):
 
 class Video(models.Model):
     class VideoStatus(models.IntegerChoices):
+        # TODO:::add in progress status
         NOT_CHECKED = 0
-        QUALITATIVE = 1
-        NON_QUALITATIVE = 2
+        CHECKED = 1
+        QUALITATIVE = 2
+        NON_QUALITATIVE = 3
 
     status = models.IntegerField(
         choices=VideoStatus.choices,
@@ -47,9 +53,6 @@ class Video(models.Model):
     title = models.CharField(max_length=256)
     description = models.TextField()
 
-    tags = models.ForeignKey(
-        to=filters_models.Tag, on_delete=models.CASCADE, null=True
-    )
     channel = models.ForeignKey(
         to=Channel, on_delete=models.CASCADE
     )
@@ -95,3 +98,10 @@ class UserMark(models.Model):
 
     def __str__(self):
         return f'{self.user.id} -> {self.video.title}'
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=64)
+    video_id = models.ForeignKey(
+        to=Video, on_delete=models.CASCADE
+    )

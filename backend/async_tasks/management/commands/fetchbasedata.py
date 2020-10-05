@@ -88,7 +88,7 @@ class Command(BaseCommand):
                     )
                     Process.objects.filter(id=p.id).update(
                         next_process=new_process.id,
-                        status=Process.ProcessStatus.GETTING_FULL_DATA
+                        status=Process.ProcessStatus.WAITING_FOR_FETCHING_FULL_DATA
                     )
 
             transaction.commit()
@@ -104,7 +104,7 @@ class Command(BaseCommand):
             processes = Process.objects.prefetch_related(
                 'user__youtubecredentials'
             ).filter(
-                status=Process.ProcessStatus.WAITING_FOR_START
+                status=Process.ProcessStatus.WAITING_FOR_FETCHING_BASE_DATA
             ).all()[:PACK_SIZE]
 
             if processes:

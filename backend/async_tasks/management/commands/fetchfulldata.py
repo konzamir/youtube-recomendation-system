@@ -37,8 +37,6 @@ class Command(BaseCommand):
         return credentials
 
     def _fetch_video_data(self) -> List[dict]:
-        # TODO:::add groupby process_id
-
         videos = ProcessVideo.objects.select_related(
             'process', 'video',
             'video__youtube_data', 'video__channel'
@@ -66,22 +64,57 @@ class Command(BaseCommand):
 
         return videos
 
+    def _make_video_status_in_progress(self, video_ids: list) -> None:
+        pass
+
     def _fetch_all_youtube_data(self, youtube_build: Resource, data: dict) -> dict:
-        video_data = youtube_build.videos().list(
+        # Video data extracting
+        _video_data = youtube_build.videos().list(
             part='snippet', id=data['video_hash']
-        ).execute()
+        ).execute()['items'][0]['snippet']
+        tags = _video_data.get('tags', [])
+        category_data = youtube_build.videoCategories().list(
+            part='snippet', id=_video_data['categoryId']
+        ).execute()['items'][0]
+        video_statistic = youtube_build.videos().list(
+            part='statistics', id=data['video_hash']
+        ).execute()['items'][0]['statistics']
+        print(video_statistic)
 
-        video_data = video_data['items'][0]
-
-        tags = video_data['snippet'].get('tags', [])
-        category = video_data['snippet']['categoryId']
-
-        print(category)
+        # Channel data extracting
+        channel_data = youtube_build.channels().list(
+            part='brandingSettings', id=data['channel_hash']
+        ).execute()['items'][0]['brandingSettings']['channel']
+        source_data = youtube_build.channels().list(
+            part='topicDetails', id=data['channel_hash']
+        ).execute()['items'][0]['topicDetails']
 
         return {
-            'tags': tags,
-            'category': {
-                'category_id': category
+            'video': {
+                'tags': tags,
+                'youtube_data': {
+                    'comment_count': video_statistic['commentCount'],
+                    'positive_mark_number': video_statistic['likeCount'],
+                    'negative_mark_number': video_statistic['dislikeCount'],
+                    'view_count': video_statistic['viewCount']
+                },
+                'category': {
+                    'youtube_id': category_data['id'],
+                    'etag': category_data['etag'],
+                    'name': category_data['snippet']['title']
+                }
+            },
+            'channel': {
+                'details': {
+                    'description': channel_data['description'],
+                    'country': channel_data['country'],
+                    'keywords': channel_data['keywords']
+                },
+                'sources': [
+                    {
+                        'name': name[name.find('/wiki/') + 6:],
+                    } for name in source_data['topicCategories']
+                ]
             }
         }
 
@@ -89,6 +122,10 @@ class Command(BaseCommand):
         transaction.set_autocommit(False)
 
         videos = self._fetch_video_data()
+        # TODO:::implement in future
+        # self._make_video_status_in_progress(
+        #     [v.video_id for v in videos]
+        # )
 
         for video in videos:
             credentials = self._fetch_credentials(video)
@@ -102,7 +139,8 @@ class Command(BaseCommand):
             youtube_fetching_result = self._fetch_all_youtube_data(youtube_build, video)
 
             print('---')
-            print(youtube_fetching_result)
+            from pprint import pprint
+            pprint(youtube_fetching_result)
             print('---')
 
         transaction.commit()
