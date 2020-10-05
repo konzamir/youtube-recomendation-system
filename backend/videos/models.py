@@ -22,8 +22,12 @@ class YoutubeData(models.Model):
     etag = models.CharField(max_length=128)
     pub_date = models.DateTimeField()
     video_hash = models.CharField(max_length=64, unique=True)
+
     positive_mark_number = models.IntegerField(default=0)
     negative_mark_number = models.IntegerField(default=0)
+    view_count = models.IntegerField(default=0)
+    comment_count = models.IntegerField(default=0)
+
     image_preview = models.OneToOneField(
         to=ImagePreview, on_delete=models.CASCADE
     )
@@ -37,14 +41,14 @@ class Video(models.Model):
 
     status = models.IntegerField(
         choices=VideoStatus.choices,
-        default=VideoStatus.NOT_CHECKED.value
+        default=VideoStatus.NOT_CHECKED
     )
     practical_usage_availability = models.BooleanField(null=True)
     title = models.CharField(max_length=256)
     description = models.TextField()
 
-    video_type = models.ForeignKey(
-        to=filters_models.VideoType, on_delete=models.CASCADE, null=True
+    tags = models.ForeignKey(
+        to=filters_models.Tag, on_delete=models.CASCADE, null=True
     )
     channel = models.ForeignKey(
         to=Channel, on_delete=models.CASCADE
@@ -52,8 +56,8 @@ class Video(models.Model):
     youtube_data = models.OneToOneField(
         to=YoutubeData, on_delete=models.CASCADE
     )
-    destination = models.ForeignKey(
-        to=filters_models.Destination, on_delete=models.CASCADE, null=True
+    category = models.ForeignKey(
+        to=filters_models.Category, on_delete=models.CASCADE, null=True
     )
 
     updated_at = models.DateTimeField(db_index=True, auto_now=True)

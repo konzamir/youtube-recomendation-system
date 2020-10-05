@@ -100,6 +100,7 @@ class Command(BaseCommand):
         transaction.set_autocommit(False)
 
         while True:
+            # TODO:::optimize with single DB request
             processes = Process.objects.prefetch_related(
                 'user__youtubecredentials'
             ).filter(
@@ -110,7 +111,3 @@ class Command(BaseCommand):
                 self._fetch_videos(processes)
 
             time.sleep(1)
-
-        transaction.set_autocommit(True)
-
-        return

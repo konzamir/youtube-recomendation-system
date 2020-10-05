@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from filters.models import Destination, VideoType, Source
+from filters.models import Tag, Category, Source
 
 
 class FilterDataSerializer(serializers.Serializer):
@@ -8,15 +8,15 @@ class FilterDataSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=64)
 
 
-class DestinationSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Destination
+        model = Tag
         fields = '__all__'
 
 
-class VideoTypeSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = VideoType
+        model = Category
         fields = '__all__'
 
 

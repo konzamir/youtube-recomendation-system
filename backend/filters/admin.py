@@ -1,7 +1,7 @@
 from django.contrib import admin
-from filters.models import Source, Destination, VideoType
+from filters.models import Source, Tag, Category
 
 
 admin.site.register(Source)
-admin.site.register(Destination)
-admin.site.register(VideoType)
+admin.site.register(Tag)
+admin.site.register(Category)

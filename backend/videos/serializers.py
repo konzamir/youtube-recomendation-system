@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from videos.models import UserMark, Channel, ImagePreview, YoutubeData, \
     Video
-from filters.serializers import DestinationSerializer, VideoTypeSerializer, SourceSerializer
+from filters.serializers import CategorySerializer, TagSerializer, SourceSerializer
 
 
 class ChannelSerializer(serializers.ModelSerializer):
@@ -28,10 +28,10 @@ class YoutubeDataSerializer(serializers.ModelSerializer):
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    video_type = VideoTypeSerializer(many=False, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
     channel = ChannelSerializer(many=False)
     youtube_data = YoutubeDataSerializer(many=False)
-    destination = DestinationSerializer(many=False)
+    category = CategorySerializer(many=False)
 
     class Meta:
         model = Video

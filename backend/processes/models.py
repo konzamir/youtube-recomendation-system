@@ -16,7 +16,7 @@ class Process(models.Model):
 
     status = models.IntegerField(
         choices=ProcessStatus.choices,
-        default=ProcessStatus.WAITING_FOR_START.value
+        default=ProcessStatus.WAITING_FOR_START
     )
     youtube_video_group = models.CharField(max_length=64, null=True, default=None)
     in_progress = models.BooleanField(default=False)
