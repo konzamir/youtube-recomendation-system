@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from videos.models import Channel, ImagePreview, YoutubeData, \
-    Video, Featured, UserMark, Tag, Source, Category
+    Video, Featured, UserMark, Tag, Source, Category, TagVideo, \
+    ChannelSource
 
 
 admin.site.register(Channel)
@@ -13,4 +14,5 @@ admin.site.register(UserMark)
 admin.site.register(Tag)
 admin.site.register(Source)
 admin.site.register(Category)
-
+admin.site.register(TagVideo)
+admin.site.register(ChannelSource)

@@ -103,6 +103,14 @@ class UserMark(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=64, unique=True)
 
+
+class TagVideo(models.Model):
+    class Meta:
+        unique_together = ['video', 'tag']
+
+    tag = models.ForeignKey(
+        to=Tag, on_delete=models.CASCADE
+    )
     video = models.ForeignKey(
         to=Video, on_delete=models.CASCADE
     )
@@ -111,6 +119,14 @@ class Tag(models.Model):
 class Source(models.Model):
     name = models.CharField(max_length=64, unique=True)
 
+
+class ChannelSource(models.Model):
+    class Meta:
+        unique_together = ['source', 'channel']
+
+    source = models.ForeignKey(
+        to=Source, on_delete=models.CASCADE
+    )
     channel = models.ForeignKey(
         to=Channel, on_delete=models.CASCADE
     )

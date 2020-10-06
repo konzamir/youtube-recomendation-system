@@ -11,12 +11,12 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build, Resource
 from helpers.user_auth_validation import is_user_youtube_auth_valid
 from processes.models import ProcessVideo
-from videos.models import Video, Channel, YoutubeData, Tag
+from videos.models import Video, Channel, YoutubeData, Tag, TagVideo, ChannelSource
 from videos.models import Source, Category
 from accounts.models import YoutubeCredentials
 
 
-PACK_SIZE = 1
+PACK_SIZE = 500
 logger = logging.getLogger(__name__)
 
 
@@ -107,7 +107,7 @@ class Command(BaseCommand):
             },
             'channel': {
                 'details': {
-                    'description': channel_data['description'],
+                    'description': channel_data['description'].encode('utf-8').decode('iso-8859-1'),
                     'country': channel_data['country'],
                     'keywords': channel_data['keywords']
                 },
@@ -124,15 +124,21 @@ class Command(BaseCommand):
             **youtube_fetching_result['channel']['details']
         )
         for source in youtube_fetching_result['channel']['sources']:
-            Source.objects.get_or_create(
-                channel_id=video['channel_id'],
+            source, _ = Source.objects.get_or_create(
                 name=source.lower().strip()
+            )
+            ChannelSource.objects.get_or_create(
+                channel_id=video['channel_id'],
+                source_id=source.id
             )
 
         for tag in youtube_fetching_result['video']['tags']:
-            Tag.objects.get_or_create(
-                video_id=video['video_id'],
+            tag_object, _ = Tag.objects.get_or_create(
                 name=tag.lower().strip()
+            )
+            TagVideo.objects.get_or_create(
+                video_id=video['video_id'],
+                tag_id=tag_object.id
             )
 
         YoutubeData.objects.filter(
@@ -152,7 +158,6 @@ class Command(BaseCommand):
 
     def _handle(self, *args, **options):
         videos = self._fetch_video_data()
-        print(videos)
         # TODO:::implement in future
         # self._make_video_status_in_progress(
         #     [v.video_id for v in videos]
