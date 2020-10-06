@@ -1,22 +1,21 @@
-import pytz
-import time
 import logging
+import time
 from typing import List
 
-import aniso8601
+import pytz
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models.sql.query import F
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build, Resource
+
+from accounts.models import YoutubeCredentials
 from helpers.user_auth_validation import is_user_youtube_auth_valid
 from processes.models import ProcessVideo
-from videos.models import Video, Channel, YoutubeData, Tag, TagVideo, ChannelSource
-from videos.models import Source, Category
-from accounts.models import YoutubeCredentials
+from videos.models import Source, Category, Video, Channel,\
+    YoutubeData, Tag, TagVideo, ChannelSource
 
-
-PACK_SIZE = 500
+PACK_SIZE = 10
 logger = logging.getLogger(__name__)
 
 
@@ -94,22 +93,22 @@ class Command(BaseCommand):
             'video': {
                 'tags': tags,
                 'youtube_data': {
-                    'comment_count': video_statistic['commentCount'],
-                    'positive_mark_number': video_statistic['likeCount'],
-                    'negative_mark_number': video_statistic['dislikeCount'],
-                    'view_count': video_statistic['viewCount']
+                    'comment_count': video_statistic.get('commentCount', 0),
+                    'positive_mark_number': video_statistic.get('likeCount', 0),
+                    'negative_mark_number': video_statistic.get('dislikeCount', 0),
+                    'view_count': video_statistic.get('viewCount', 0)
                 },
                 'category': {
                     'youtube_id': category_data['id'],
                     'etag': category_data['etag'],
-                    'name': category_data['snippet']['title']
+                    'name': category_data['snippet']['title'].encode('utf-8').decode('iso-8859-1')
                 }
             },
             'channel': {
                 'details': {
                     'description': channel_data['description'].encode('utf-8').decode('iso-8859-1'),
-                    'country': channel_data['country'],
-                    'keywords': channel_data['keywords']
+                    'country': channel_data.get('country', ''),
+                    'keywords': channel_data.get('keywords', '')
                 },
                 'sources': [
                     name[name.find('/wiki/') + 6:] for name in source_data['topicCategories']

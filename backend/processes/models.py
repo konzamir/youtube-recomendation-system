@@ -41,7 +41,7 @@ class ProcessVideo(models.Model):
     class Meta:
         unique_together = ['video', 'process']
     video = models.ForeignKey(
-        to=Video, on_delete=models.CASCADE
+        to=Video, on_delete=models.CASCADE, related_name='pv_videos'
     )
     process = models.ForeignKey(
         to=Process, on_delete=models.CASCADE

@@ -42,8 +42,6 @@ class Video(models.Model):
         # TODO:::add in progress status
         NOT_CHECKED = 0
         CHECKED = 1
-        QUALITATIVE = 2
-        NON_QUALITATIVE = 3
 
     status = models.IntegerField(
         choices=VideoStatus.choices,
@@ -101,7 +99,7 @@ class UserMark(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=128, unique=True)
 
 
 class TagVideo(models.Model):
@@ -117,7 +115,7 @@ class TagVideo(models.Model):
 
 
 class Source(models.Model):
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=128, unique=True)
 
 
 class ChannelSource(models.Model):
