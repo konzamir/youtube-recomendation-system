@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'accounts',
-    'filters',
     'processes',
     'videos',
     'async_tasks'

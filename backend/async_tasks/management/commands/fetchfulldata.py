@@ -9,14 +9,14 @@ from django.db import transaction
 from django.db.models.sql.query import F
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build, Resource
-from django.contrib.auth.models import User
 from helpers.user_auth_validation import is_user_youtube_auth_valid
-from processes.models import Process, ProcessVideo
-from videos.models import Video, ImagePreview, Channel, YoutubeData
+from processes.models import ProcessVideo
+from videos.models import Video, Channel, YoutubeData, Tag
+from videos.models import Source, Category
 from accounts.models import YoutubeCredentials
 
 
-PACK_SIZE = 500
+PACK_SIZE = 1
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +46,8 @@ class Command(BaseCommand):
             'video_id',
             user_id=F('process__user__id'),
             video_hash=F('video__youtube_data__video_hash'),
-            video_data_id=F('video__youtube_data__id'),
+
+            youtube_data_id=F('video__youtube_data__id'),
 
             channel_id=F('video__channel__id'),
             channel_hash=F('video__channel__youtube_id'),
@@ -60,7 +61,7 @@ class Command(BaseCommand):
             youtube_client_expiry=F('process__user__youtubecredentials__expiry'),
         ).filter(
             video__status=Video.VideoStatus.NOT_CHECKED
-        ).all()[0:1]#PACK_SIZE]
+        ).all()[0:PACK_SIZE]
 
         return videos
 
@@ -111,36 +112,73 @@ class Command(BaseCommand):
                     'keywords': channel_data['keywords']
                 },
                 'sources': [
-                    {
-                        'name': name[name.find('/wiki/') + 6:],
-                    } for name in source_data['topicCategories']
+                    name[name.find('/wiki/') + 6:] for name in source_data['topicCategories']
                 ]
             }
         }
 
-    def handle(self, *args, **options):
-        transaction.set_autocommit(False)
+    def _store_results(self, video, youtube_fetching_result):
+        Channel.objects.filter(
+            id=video['channel_id']
+        ).update(
+            **youtube_fetching_result['channel']['details']
+        )
+        for source in youtube_fetching_result['channel']['sources']:
+            Source.objects.get_or_create(
+                channel_id=video['channel_id'],
+                name=source.lower().strip()
+            )
 
+        for tag in youtube_fetching_result['video']['tags']:
+            Tag.objects.get_or_create(
+                video_id=video['video_id'],
+                name=tag.lower().strip()
+            )
+
+        YoutubeData.objects.filter(
+            id=video['youtube_data_id']
+        ).update(
+            **youtube_fetching_result['video']['youtube_data']
+        )
+        category, _ = Category.objects.get_or_create(
+            **youtube_fetching_result['video']['category']
+        )
+        Video.objects.filter(
+            id=video['video_id']
+        ).update(
+            category_id=category.id,
+            status=Video.VideoStatus.CHECKED
+        )
+
+    def _handle(self, *args, **options):
         videos = self._fetch_video_data()
+        print(videos)
         # TODO:::implement in future
         # self._make_video_status_in_progress(
         #     [v.video_id for v in videos]
         # )
-
         for video in videos:
             credentials = self._fetch_credentials(video)
             if not credentials:
                 YoutubeCredentials.objects.filter(id=video['youtube_id']).delete()
                 logger.warning('YouTube credentials were invalid for user with id %s', video['user_id'])
-
                 continue
 
             youtube_build = build("youtube", "v3", credentials=credentials)
             youtube_fetching_result = self._fetch_all_youtube_data(youtube_build, video)
 
-            print('---')
-            from pprint import pprint
-            pprint(youtube_fetching_result)
-            print('---')
+            self._store_results(
+                video=video, youtube_fetching_result=youtube_fetching_result
+            )
+            transaction.commit()
 
-        transaction.commit()
+    def handle(self, *args, **options):
+        transaction.set_autocommit(False)
+
+        while True:
+            try:
+                self._handle(*args, **options)
+                time.sleep(1)
+            except Exception as exc:
+                logger.error(exc, exc_info=True)
+                transaction.rollback()

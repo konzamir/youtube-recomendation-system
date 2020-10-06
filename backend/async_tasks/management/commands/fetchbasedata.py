@@ -108,6 +108,8 @@ class Command(BaseCommand):
             ).all()[:PACK_SIZE]
 
             if processes:
+                # TODO::implement in future
+                # self._mark_processes_in_progress(...)
                 self._fetch_videos(processes)
 
             time.sleep(1)

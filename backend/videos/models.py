@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from filters import models as filters_models
-
 
 class Channel(models.Model):
     youtube_id = models.CharField(max_length=128)
@@ -10,10 +8,6 @@ class Channel(models.Model):
     country = models.CharField(max_length=4)
     description = models.TextField()
     keywords = models.TextField()
-
-    source = models.ForeignKey(
-        to=filters_models.Source, on_delete=models.CASCADE, null=True
-    )
 
 
 class ImagePreview(models.Model):
@@ -35,6 +29,12 @@ class YoutubeData(models.Model):
     image_preview = models.OneToOneField(
         to=ImagePreview, on_delete=models.CASCADE
     )
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+    youtube_id = models.CharField(max_length=128)
+    etag = models.CharField(max_length=64)
 
 
 class Video(models.Model):
@@ -60,7 +60,7 @@ class Video(models.Model):
         to=YoutubeData, on_delete=models.CASCADE
     )
     category = models.ForeignKey(
-        to=filters_models.Category, on_delete=models.CASCADE, null=True
+        to=Category, on_delete=models.CASCADE, null=True
     )
 
     updated_at = models.DateTimeField(db_index=True, auto_now=True)
@@ -101,7 +101,16 @@ class UserMark(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=64)
-    video_id = models.ForeignKey(
+    name = models.CharField(max_length=64, unique=True)
+
+    video = models.ForeignKey(
         to=Video, on_delete=models.CASCADE
+    )
+
+
+class Source(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+
+    channel = models.ForeignKey(
+        to=Channel, on_delete=models.CASCADE
     )
