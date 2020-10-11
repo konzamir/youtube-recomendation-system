@@ -12,6 +12,7 @@ from helpers.user_auth_validation import is_user_youtube_auth_valid
 from processes.models import Process, ProcessVideo
 from videos.models import Video, ImagePreview, Channel, YoutubeData
 from accounts.models import YoutubeCredentials
+from helpers.custom_encoders import encode_str
 
 
 PACK_SIZE = 500
@@ -70,8 +71,8 @@ class Command(BaseCommand):
                         }
                     )
                     db_video, _ = Video.objects.get_or_create(
-                        title=snippet['title'].encode('utf-8').decode('iso-8859-1'),
-                        description=snippet['description'].encode('utf-8').decode('iso-8859-1'),
+                        title=encode_str(snippet['title']),
+                        description=encode_str(snippet['description']),
                         channel=channel,
                         youtube_data=youtube_data
                     )
@@ -87,10 +88,14 @@ class Command(BaseCommand):
                         user_id=p.user_id,
                         prev_process=p.id
                     )
+                    # TODO:::add creating filters per process
                     Process.objects.filter(id=p.id).update(
                         next_process=new_process.id,
-                        status=Process.ProcessStatus.WAITING_FOR_FETCHING_FULL_DATA
                     )
+
+                Process.objects.filter(id=p.id).update(
+                    status=Process.ProcessStatus.WAITING_FOR_FETCHING_FULL_DATA
+                )
 
             transaction.commit()
         except Exception as exc:

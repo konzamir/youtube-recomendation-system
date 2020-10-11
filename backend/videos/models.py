@@ -80,11 +80,13 @@ class Featured(models.Model):
 
 
 class UserMark(models.Model):
+    class Meta:
+        unique_together = ['video', 'user']
     video = models.ForeignKey(
-        to=Video, on_delete=models.CASCADE
+        to=Video, on_delete=models.CASCADE, related_name='um_videos'
     )
     user = models.ForeignKey(
-        to=User, on_delete=models.CASCADE
+        to=User, on_delete=models.CASCADE, related_name='um_user'
     )
     information_quality = models.IntegerField(null=True)
     medical_practice_quality = models.IntegerField(null=True)
@@ -99,10 +101,10 @@ class TagVideo(models.Model):
         unique_together = ['video', 'tag']
 
     tag = models.ForeignKey(
-        to=Tag, on_delete=models.CASCADE
+        to=Tag, on_delete=models.CASCADE, related_name='tv_tags'
     )
     video = models.ForeignKey(
-        to=Video, on_delete=models.CASCADE
+        to=Video, on_delete=models.CASCADE, related_name='tv_videos'
     )
 
 
@@ -111,8 +113,8 @@ class ChannelSource(models.Model):
         unique_together = ['source', 'channel']
 
     source = models.ForeignKey(
-        to=Source, on_delete=models.CASCADE
+        to=Source, on_delete=models.CASCADE, related_name='cs_sources'
     )
     channel = models.ForeignKey(
-        to=Channel, on_delete=models.CASCADE
+        to=Channel, on_delete=models.CASCADE, related_name='cs_channel'
     )

@@ -14,6 +14,7 @@ from helpers.user_auth_validation import is_user_youtube_auth_valid
 from processes.models import ProcessVideo
 from videos.models import Video, Channel, YoutubeData, TagVideo, ChannelSource
 from filters.models import Tag, Category, Source
+from helpers.custom_encoders import encode_str
 
 
 PACK_SIZE = 10
@@ -92,7 +93,7 @@ class Command(BaseCommand):
 
         return {
             'video': {
-                'tags': tags,
+                'tags': [encode_str(tag) for tag in tags],
                 'youtube_data': {
                     'comment_count': video_statistic.get('commentCount', 0),
                     'positive_mark_number': video_statistic.get('likeCount', 0),
@@ -102,17 +103,17 @@ class Command(BaseCommand):
                 'category': {
                     'youtube_id': category_data['id'],
                     'etag': category_data['etag'],
-                    'name': category_data['snippet']['title'].encode('utf-8').decode('iso-8859-1')
+                    'name': encode_str(category_data['snippet']['title'])
                 }
             },
             'channel': {
                 'details': {
-                    'description': channel_data['description'].encode('utf-8').decode('iso-8859-1'),
+                    'description': encode_str(channel_data['description']),
                     'country': channel_data.get('country', ''),
-                    'keywords': channel_data.get('keywords', '')
+                    'keywords': encode_str(channel_data.get('keywords', ''))
                 },
                 'sources': [
-                    name[name.find('/wiki/') + 6:] for name in source_data['topicCategories']
+                    encode_str(name[name.find('/wiki/') + 6:]) for name in source_data['topicCategories']
                 ]
             }
         }
