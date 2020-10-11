@@ -12,8 +12,9 @@ from googleapiclient.discovery import build, Resource
 from accounts.models import YoutubeCredentials
 from helpers.user_auth_validation import is_user_youtube_auth_valid
 from processes.models import ProcessVideo
-from videos.models import Source, Category, Video, Channel,\
-    YoutubeData, Tag, TagVideo, ChannelSource
+from videos.models import Video, Channel, YoutubeData, TagVideo, ChannelSource
+from filters.models import Tag, Category, Source
+
 
 PACK_SIZE = 10
 logger = logging.getLogger(__name__)

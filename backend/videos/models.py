@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from filters.models import Tag, Category, Source
+
 
 class Channel(models.Model):
     youtube_id = models.CharField(max_length=128)
@@ -29,12 +31,6 @@ class YoutubeData(models.Model):
     image_preview = models.OneToOneField(
         to=ImagePreview, on_delete=models.CASCADE
     )
-
-
-class Category(models.Model):
-    name = models.CharField(max_length=128, unique=True)
-    youtube_id = models.CharField(max_length=128)
-    etag = models.CharField(max_length=64)
 
 
 class Video(models.Model):
@@ -98,10 +94,6 @@ class UserMark(models.Model):
         return f'{self.user.id} -> {self.video.title}'
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=128, unique=True)
-
-
 class TagVideo(models.Model):
     class Meta:
         unique_together = ['video', 'tag']
@@ -112,10 +104,6 @@ class TagVideo(models.Model):
     video = models.ForeignKey(
         to=Video, on_delete=models.CASCADE
     )
-
-
-class Source(models.Model):
-    name = models.CharField(max_length=128, unique=True)
 
 
 class ChannelSource(models.Model):

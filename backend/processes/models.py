@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from videos.models import Video
+from filters.models import Category, Tag, Source
 
 
 class Process(models.Model):
@@ -44,5 +45,38 @@ class ProcessVideo(models.Model):
         to=Video, on_delete=models.CASCADE, related_name='pv_videos'
     )
     process = models.ForeignKey(
-        to=Process, on_delete=models.CASCADE
+        to=Process, on_delete=models.CASCADE, related_name='pv_processes'
+    )
+
+
+class ProcessTag(models.Model):
+    class Meta:
+        unique_together = ['tag', 'process']
+    tag = models.ForeignKey(
+        to=Tag, on_delete=models.CASCADE, related_name='pt_tags'
+    )
+    process = models.ForeignKey(
+        to=Process, on_delete=models.CASCADE, related_name='pt_processes'
+    )
+
+
+class ProcessSource(models.Model):
+    class Meta:
+        unique_together = ['source', 'process']
+    source = models.ForeignKey(
+        to=Source, on_delete=models.CASCADE, related_name='ps_sources'
+    )
+    process = models.ForeignKey(
+        to=Process, on_delete=models.CASCADE, related_name='ps_processes'
+    )
+
+
+class ProcessCategory(models.Model):
+    class Meta:
+        unique_together = ['category', 'process']
+    category = models.ForeignKey(
+        to=Category, on_delete=models.CASCADE, related_name='pc_categories'
+    )
+    process = models.ForeignKey(
+        to=Process, on_delete=models.CASCADE, related_name='pc_processes'
     )

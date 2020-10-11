@@ -15,6 +15,7 @@ from accounts.models import YoutubeCredentials
 
 
 PACK_SIZE = 500
+VIDEOS_RESULTS = 25
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +45,7 @@ class Command(BaseCommand):
                     part='snippet',
                     type='video',
                     q='test',
-                    maxResults=25,
+                    maxResults=VIDEOS_RESULTS,
                     pageToken=p.youtube_video_group
                 ).execute()
 
