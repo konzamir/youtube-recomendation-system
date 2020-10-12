@@ -47,6 +47,7 @@ class ProcessVideo(models.Model):
     process = models.ForeignKey(
         to=Process, on_delete=models.CASCADE, related_name='pv_processes'
     )
+    video_order = models.IntegerField(default=None)
 
 
 class ProcessTag(models.Model):

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
@@ -7,11 +8,12 @@ from processes.models import Process, ProcessVideo
 from helpers.custom_encoders import decode_str
 
 
-PACK_SIZE = 2  # Pack size for fetching processes
+PACK_SIZE = 1  # Pack size for fetching processes
 BASE_DATA_STRUCTURE = {
     'videos': defaultdict(lambda: {
         'practical_usage_availability': bool(),
         'title': str(),
+        'description': str(),
 
         'sources': set(),
         'tags': set(),
@@ -36,6 +38,7 @@ BASE_DATA_STRUCTURE = {
     'categories': set(),
     "search_data": str()
 }
+
 
 class Command(BaseCommand):
     help = 'Command for filtering videos per process'
@@ -73,9 +76,7 @@ class Command(BaseCommand):
             mark_user_id=F('video__um_videos__user__id')
         )
         # TODO:::add fetching with parts via the limit / offset
-        processes = ProcessVideo.objects.select_related(
-            'process', 'process__user'
-        ).annotate(
+        processes = ProcessVideo.objects.annotate(
             **data_for_fetching
         ).values(
             'process_id', 'video_id', *data_for_fetching.keys()
@@ -94,7 +95,6 @@ class Command(BaseCommand):
         for process_data in processes:
             process_id = process_data['process_id']
             process_video_grouped[process_id]["search_data"] = process_data['search_data']
-            video_id = process_data['video_id']
 
             process_video_grouped[process_id]['sources'].add(
                 decode_str(process_data['process_source']))
@@ -102,6 +102,8 @@ class Command(BaseCommand):
                 decode_str(process_data['process_tag']))
             process_video_grouped[process_id]['categories'].add(
                 decode_str(process_data['process_category']))
+
+            video_id = process_data['video_id']
 
             process_video_grouped[process_id]['videos'][video_id]['practical_usage_availability'] = \
                 process_data['video_practical_usage_availability']
@@ -155,12 +157,71 @@ class Command(BaseCommand):
 
         return process_video_grouped
 
+    def __compare_criteria_lists(self, process_criteria: list, video_criteria: list) -> bool:
+        """ Dummy search through the two lists.
+        TODO:::in the future update with more quick algorithm
+        """
+        for pc in process_criteria:
+            if pc is None:
+                continue
+
+            pc = pc.lower()
+            for vc in video_criteria:
+                if vc is None:
+                    continue
+
+                vc = vc.lower()
+                if pc.find(vc) >= 0 or vc.find(pc) >= 0:
+                    print('  +++  ', pc, vc)
+                    return True
+
+        return False
+
+    def _filter_data(self, formated_data: BASE_DATA_STRUCTURE) -> dict:
+        """
+        Criteria are:
+          * sources
+          * tags
+          * categories
+          * medical practical usage
+        """
+        videos_for_filtering = defaultdict(set)
+
+        for process_id, process_data in formated_data.items():
+            for video_id, video_data in process_data['videos'].items():
+                if video_data['practical_usage_availability'] is False or \
+                        not self.__compare_criteria_lists(process_data['sources'], video_data['sources']) and \
+                        not self.__compare_criteria_lists(process_data['tags'], video_data['tags']) and \
+                        not self.__compare_criteria_lists(process_data['categories'], video_data['categories']):
+                    videos_for_filtering[process_id].add(video_id)
+                    continue
+
+        for process_id, video_ids in videos_for_filtering.items():
+            for video_id in video_ids:
+                del formated_data[process_id]['videos'][video_id]
+
+        return formated_data
+
+    def _sort_data(self, filtered_data: BASE_DATA_STRUCTURE) -> dict:
+        """
+        Criteria are:
+          * user marks
+          * youtube marks
+        """
+        sorted_data = {}
+
+        print(filtered_data)
+
+        return sorted_data
+
+    def _update_data(self, sorted_data):
+        pass
+
     def handle(self, *args, **options):
         processes = self._fetch_data_from_db()
+
         formated_data = self._format_data(processes)
+        filtered_data = self._filter_data(formated_data)
+        sorted_data = self._sort_data(filtered_data)
 
-        from pprint import pprint
-        print()
-        pprint(formated_data[1]['videos'][1]['youtube_marks'])
-        print()
-
+        self._update_data(sorted_data)
