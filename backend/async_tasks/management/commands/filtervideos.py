@@ -1,8 +1,9 @@
-from copy import deepcopy
+import time
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
 from django.db.models import F
+from django.db import transaction
 
 from processes.models import Process, ProcessVideo
 from helpers.custom_encoders import decode_str
@@ -158,8 +159,8 @@ class Command(BaseCommand):
         return process_video_grouped
 
     def __compare_criteria_lists(self, process_criteria: list, video_criteria: list) -> bool:
-        """ Dummy search through the two lists.
-        TODO:::in the future update with more quick algorithm
+        """ Dummy search through the two lists because total number of elements
+        will not be bigger then 100.
         """
         for pc in process_criteria:
             if pc is None:
@@ -172,7 +173,6 @@ class Command(BaseCommand):
 
                 vc = vc.lower()
                 if pc.find(vc) >= 0 or vc.find(pc) >= 0:
-                    print('  +++  ', pc, vc)
                     return True
 
         return False
@@ -208,16 +208,41 @@ class Command(BaseCommand):
           * user marks
           * youtube marks
         """
-        sorted_data = {}
+        process_video_order = defaultdict(dict)
 
-        print(filtered_data)
+        for process_id, process_data in filtered_data.items():
+            videos = [
+                {
+                    'video_id': v_id,
+                    'marks_sum': sum(
+                        list(v_data['marks'].values()) + list(v_data['youtube_marks'].values())
+                    )
+                } for v_id, v_data in process_data['videos'].items()
+            ]
+            videos = sorted(
+                videos,
+                key=lambda video: video['marks_sum'],
+                reverse=True
+            )
 
-        return sorted_data
+            process_video_order[process_id] = {
+                index: video['video_id'] for index, video in enumerate(videos)
+            }
 
-    def _update_data(self, sorted_data):
-        pass
+        return process_video_order
 
-    def handle(self, *args, **options):
+    def _update_data(self, sorted_data: dict) -> None:
+        with transaction.atomic():
+            for process_id, ordered_videos in sorted_data.items():
+                for video_order, video_id in ordered_videos.items():
+                    ProcessVideo.objects.filter(
+                        process_id=process_id,
+                        video_id=video_id
+                    ).update(
+                        video_order=video_order
+                    )
+
+    def _handle(self):
         processes = self._fetch_data_from_db()
 
         formated_data = self._format_data(processes)
@@ -225,3 +250,8 @@ class Command(BaseCommand):
         sorted_data = self._sort_data(filtered_data)
 
         self._update_data(sorted_data)
+
+    def handle(self, *args, **options):
+        while True:
+            self._handle()
+            time.sleep(1)
