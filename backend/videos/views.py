@@ -5,7 +5,7 @@ from videos.models import Video
 from videos.serializers import UserMarkSerializer, VideoSerializer
 
 
-class VideoAPIViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = VideoSerializer
     permission_classes = [
         permissions.IsAuthenticated
@@ -14,15 +14,6 @@ class VideoAPIViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     def get_queryset(self):
         # TODO:::upgrade queryset if would be necessary
         return Video.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        response = super(VideoAPIViewSet, self).list(request, *args, **kwargs)
-
-        return Response({
-            'data': {
-                'videos': response.data
-            }
-        })
 
     def retrieve(self, request, *args, **kwargs):
         response = super(VideoAPIViewSet, self).retrieve(request, *args, **kwargs)
