@@ -16,7 +16,8 @@ urlpatterns = [
     path('api/', include([
         path('auth/', include('accounts.urls')),
         path('videos/', include('videos.urls')),
-        path('processes/', include('processes.urls'))
+        path('processes/', include('processes.urls')),
+        path('filters/', include('filters.urls'))
     ])),
     path('', test)
 ]
