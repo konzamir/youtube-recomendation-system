@@ -226,7 +226,7 @@ class Command(BaseCommand):
             )
 
             process_video_order[process_id] = {
-                index: video['video_id'] for index, video in enumerate(videos)
+                (index + 1): video['video_id'] for index, video in enumerate(videos)
             }
 
         return process_video_order
@@ -241,6 +241,12 @@ class Command(BaseCommand):
                     ).update(
                         video_order=video_order
                     )
+
+                Process.objects.filter(
+                    id=process_id
+                ).update(
+                    status=Process.ProcessStatus.SUCCESS
+                )
 
     def _handle(self):
         processes = self._fetch_data_from_db()

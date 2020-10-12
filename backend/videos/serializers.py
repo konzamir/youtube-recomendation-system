@@ -26,6 +26,22 @@ class YoutubeDataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SmallYoutubeDataSerializer(serializers.ModelSerializer):
+    image_preview = ImagePreviewSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = YoutubeData
+        fields = ('image_preview', )
+
+
+class SmallVideoSerializer(serializers.ModelSerializer):
+    youtube_data = SmallYoutubeDataSerializer(many=False)
+
+    class Meta:
+        model = Video
+        fields = ('id', 'title', 'description', 'youtube_data')
+
+
 class VideoSerializer(serializers.ModelSerializer):
     channel = ChannelSerializer(many=False)
     youtube_data = YoutubeDataSerializer(many=False)
