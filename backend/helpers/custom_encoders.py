@@ -3,7 +3,10 @@ def encode_str(data: str) -> str:
 
 
 def decode_str(data: str) -> str:
-    return data.encode('iso-8859-1').decode('utf-8')
+    try:
+        return data.encode('iso-8859-1').decode('utf-8')
+    except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
+        return data
 
 
 def decode_dict(data: dict) -> dict:
@@ -12,8 +15,11 @@ def decode_dict(data: dict) -> dict:
         'tag', 'category'
     ]
 
-    for key, value in data:
+    for key, value in data.items():
         if key in keys_to_decode:
-            data[key] = decode_str(value)
+            try:
+                data[key] = decode_str(value)
+            except (UnicodeEncodeError, UnicodeDecodeError):
+                continue
 
     return data

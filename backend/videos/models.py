@@ -60,10 +60,11 @@ class Video(models.Model):
     updated_at = models.DateTimeField(db_index=True, auto_now=True)
     created_at = models.DateTimeField(db_index=True, auto_now_add=True)
 
-    def __str__(self):
-        return self.title
+    # def __str__(self):
+    #     return self.title
 
 
+# TODO:::move to accounts
 class Featured(models.Model):
     video = models.ForeignKey(
         to=Video, on_delete=models.CASCADE
@@ -75,10 +76,11 @@ class Featured(models.Model):
     updated_at = models.DateTimeField(db_index=True, auto_now=True)
     created_at = models.DateTimeField(db_index=True, auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.user.id} -> {self.video.title}'
+    # def __str__(self):
+    #     return f'{self.user.id} -> {self.video.title}'
 
 
+# TODO:::move to accounts
 class UserMark(models.Model):
     class Meta:
         unique_together = ['video', 'user']
@@ -92,8 +94,8 @@ class UserMark(models.Model):
     medical_practice_quality = models.IntegerField(null=True)
     description_quality = models.IntegerField(null=True)
 
-    def __str__(self):
-        return f'{self.user.id} -> {self.video.title}'
+    # def __str__(self):
+    #     return f'{self.user.id} -> {self.video.title}'
 
 
 class TagVideo(models.Model):

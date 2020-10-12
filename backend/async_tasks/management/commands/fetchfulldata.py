@@ -103,7 +103,7 @@ class Command(BaseCommand):
                 'category': {
                     'youtube_id': category_data['id'],
                     'etag': category_data['etag'],
-                    'name': encode_str(category_data['snippet']['title'])
+                    'name': encode_str(category_data['snippet']['title'].lower())
                 }
             },
             'channel': {
