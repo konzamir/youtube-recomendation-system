@@ -33,13 +33,13 @@
     },
     methods: {
       showLoginForm() {
-        this.$store.state.loginModal = true
+        this.$parent.$parent.$refs.loginForm.show();
       },
       showRegisterForm() {
-        this.$store.state.registerModal = true
+        this.$parent.$parent.$refs.registerForm.show();
       },
       showUserInfo() {
-        this.$store.state.userInfoModal = true
+        this.$parent.$parent.$refs.userInfo.show();
       }
     },
     components: {

@@ -83,7 +83,7 @@
             return {
                 errors: [],
                 username: "tempo",
-                // dialog: false,
+                dialog: false,
                 email: "test@test.com",
             }
         },
@@ -93,9 +93,6 @@
             },
             featuredCount() {
                 return this.$store.state.user.links.length;
-            },
-            dialog() {
-                return this.$store.state.userInfoModal;
             }
         },
         methods: {
@@ -110,7 +107,7 @@
                         this.$store.commit('removeUser', false);
                         this.$store.commit('setLoadingStatus', false);
                         this.close();
-                        this.$parent.$refs.successDialog.show('Logout successful!');
+                        this.$parent.$parent.$refs.successDialog.show('Logout successful!');
                     })
                     .catch((err) => {
                         this.errors = error.response.data.errors;
@@ -119,7 +116,7 @@
                 }
             },
             close() {
-                // this.dialog = false;
+                this.dialog = false;
                 this.$store.state.userInfoModal = false;
             },
             logout() {
@@ -130,7 +127,6 @@
                 this.username = user.username;
                 this.email = user.email;
                 this.dialog = !this.dialog;
-
             },
         },
         components: {

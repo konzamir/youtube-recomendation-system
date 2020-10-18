@@ -47,7 +47,7 @@ const actions = {
     });
   },
   loginAction({ dispatch, commit, state }, payload) {
-    // commit('setLoadingStatus', true);
+    commit('setLoadingStatus', true);
     return axios({
       method: "post",
       url: `${urlEntripoint}/auth/login/`,
@@ -73,7 +73,7 @@ const actions = {
     });
   },
   getMedia({ dispatch, commit, state }, payload) {
-    // commit('setLoadingStatus', true);
+    commit('setLoadingStatus', true);
 
     return axios({
       method: "post",
@@ -95,7 +95,7 @@ const actions = {
       data: payload,
       headers: headers
     }).then(response => {
-      // commit('addFeatured', payload.video_id);
+      commit('addFeatured', payload.video_id);
     });
   },
   removeFeatured({ dispatch, commit, state }, payload) {
@@ -111,7 +111,7 @@ const actions = {
       data: payload,
       headers: headers
     }).then(response => {
-      // commit('removeFeatured', payload.video_id);
+      commit('removeFeatured', payload.video_id);
     });
   },
   getFeaturedList({ dispatch, commit, state }) {

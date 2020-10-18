@@ -122,7 +122,7 @@
                       this.$store.commit('setLoadingStatus', false);
                       this.close();
 
-                      this.$parent.$refs.successDialog.show('User registered!');
+                      this.$parent.$parent.$refs.successDialog.show('User registered!');
                   })
                   .catch((error) => {
                       this.errors = error.response.data.errors;

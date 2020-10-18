@@ -81,7 +81,6 @@
                 if (this.featured){
                     if (!this.$store.state.user.links.includes(videoId))
                     {
-                        this.$store.commit('addFeatured', videoId);
                         this.$store.dispatch('addFeatured', payload)
                         .catch((err) => {
                             this.featured = !this.featured;
@@ -94,7 +93,6 @@
                     var index = arr.indexOf(videoId);
                     
                     if (index > -1) {
-                        this.$store.commit('removeFeatured', videoId);
                         this.$store.dispatch('removeFeatured', payload)
                         .catch((err) => {
                             this.featured = !this.featured;
