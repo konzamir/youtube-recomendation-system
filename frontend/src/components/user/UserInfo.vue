@@ -184,7 +184,15 @@
         },
         methods: {
             getFeatured (){
-                this.$parent.getFeatured();
+                this.$router.push({
+                    name: 'main',
+                }, () => {});
+                this.$router.push({
+                    name: 'main',
+                    query: {
+                        q: this.$store.state.gettingFeaturedKeyPhrase
+                    }
+                }, () => {});
                 this.close();
             },
             confirmLogoutF(confirmed){

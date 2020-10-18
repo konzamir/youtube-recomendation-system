@@ -34,7 +34,7 @@
                 </v-form>
                 <ul>
                   <li class="red--text subheading" v-for="err in errors">
-                    {{err}}
+                    {{err[0]}}
                   </li>
                 </ul>
               </v-card-text>

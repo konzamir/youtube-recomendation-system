@@ -64,25 +64,27 @@
                 displayReturnButtonValue:   200,
                 displayReturnButton:        false,
                 offsetTop:                  0,
-                items:                      [
-                    // {
-                    //     title: 'test',
-                    //     video_id: '2c1Jyaj-IZ8',
-                    //     preview_url: 'https://i.ytimg.com/vi/ST8pJISKqaw/hq720.jpg?sqp=-oaymwEZCNAFEJQDSFXyq4qpAwsIARUAAIhCGAFwAQ==&rs=AOn4CLBPniGjOcd5M_EOjv6clPZ0vQgttg',
-                    // },
-                ],
+                items:                      [],
                 errors:                     [],
                 query:                      "",
                 fetched:                    false,
                 currPage:                   null,
                 nextPage:                   null,
-                prevPage:                   null,
-                gettingFeaturedKeyPhrase:   "#featured-media"
+                prevPage:                   null
             }
         },
         methods: {
+            getFeatured (){
+                this.$router.push({
+                    name: 'main',
+                    query: {
+                        q: this.$store.state.gettingFeaturedKeyPhrase
+                    }
+                });
+                this.sendGettingFeatureRequest();
+            },
             showAlert(d) {
-                this.$refs.successAlert.show(d);
+                this.$root.$children[0].$refs.successAlert.show()
             },
             onScroll (e) {
                 this.offsetTop = window.pageYOffset || document.documentElement.scrollTop
@@ -94,24 +96,11 @@
                     easing: 'linear'
                 });
             },
-            getFeatured() {
-                this.query = this.gettingFeaturedKeyPhrase;
-                this.$refs.bigSearch.setMessage(this.query);
-
-                this.$router.push({
-                    path: '/',
-                    query: {
-                        q: this.query
-                    }
-                });
-
-                this.sendGettingFeatureRequest();
-            },
             sendGettingFeatureRequest(){
-                this.$refs.bigProcess.show();
+                this.$root.$children[0].$refs.bigProcess.show();
                 this.$store.dispatch('getFeaturedList')
                 .then((response) => {
-                    this.$refs.bigProcess.close();
+                    this.$root.$children[0].$refs.bigProcess.close()
                     this.items = response.data.data.links;
                     this.nextPage = null;
                     this.prevPage = null;
@@ -120,8 +109,9 @@
                     this.fetched = true;
                 })
                 .catch((err) => {
-                    this.$refs.bigProcess.close();
-                    this.errors = error.response.data.errors;
+                    console.log(err)
+                    this.$root.$children[0].$refs.bigProcess.close()
+                    this.errors = err.response.data.errors;
                     this.fetched = true;
                 });
             },
@@ -137,20 +127,20 @@
                             q: this.query,
                             p: pageToken
                         }
-                    })
+                    }, () => {})
                 } else {
                     this.$router.push({
                         path: '/',
                         query: {
                             q: this.query
                         }
-                    })
+                    }, () => {})
                 }
-                this.$refs.bigProcess.show();
+                this.$root.$children[0].$refs.bigProcess.show();
                 
                 this.$store.dispatch('getMedia', payload)
                 .then((response) => {
-                    this.$refs.bigProcess.close();
+                    this.$root.$children[0].$refs.bigProcess.close();
 
                     this.currPage = response.data.data.request_data.curr_page;
                     this.prevPage = response.data.data.request_data.prev_page;
@@ -161,17 +151,30 @@
                     this.fetched = true;
                 })
                 .catch((err) => {
-                    this.$refs.bigProcess.close();
-                    this.errors = error.response.data.errors;
+                    this.$root.$children[0].$refs.bigProcess.close();
+                    this.errors = err.response.data.errors;
                     this.fetched = true;
                 })
             },
             startSearch(q) {
                 this.query = q;
-                if (q == this.gettingFeaturedKeyPhrase){
+                if (q == this.$store.state.gettingFeaturedKeyPhrase){
                     this.sendGettingFeatureRequest();
                 } else {
                     this.sendRequest(null);
+                }
+            },
+            pageLoad() {
+                if (this.$route.query.q) {
+                    this.query = this.$route.query.q;
+                    this.$refs.bigSearch.setMessage(this.query);
+
+                    if (this.query == this.$store.state.gettingFeaturedKeyPhrase){
+                        this.$refs.bigSearch.setMessage(this.query);
+                        this.sendGettingFeatureRequest();
+                    } else {
+                        this.sendRequest(this.$route.query.p);
+                    }
                 }
             }
         },
@@ -183,26 +186,20 @@
                     this.displayReturnButton = false;
                 }
             },
+            '$router.push': 'pageLoad'
         },
         components: {
             'big-search':       BigSearch,
             'search-item':      SearchItem,
             'media-element':    MediaElement,
         },
-        mounted() {
-            if (this.$route.query.q) {
-                this.query = this.$route.query.q;
-                this.$refs.bigSearch.setMessage(this.query);
-
-                if (this.query == this.gettingFeaturedKeyPhrase){
-                    this.sendGettingFeatureRequest();
-                } else {
-                    this.sendRequest(this.$route.query.p);
-                }
-            }
+        beforeRouteUpdate(to, from, next) {
+            this.pageLoad();
+            next();
         },
-        beforeMount() {
-            this.$store.dispatch('initial');
+        
+        mounted() {
+            this.pageLoad();
         }
     }
 </script>

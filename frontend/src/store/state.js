@@ -15,7 +15,8 @@ const state = {
   videos: [],
   loginModal: false,
   registerModal: false,
-  userInfoModal: false
+  userInfoModal: false,
+  gettingFeaturedKeyPhrase: "#featured-media"
 };
 
 export default state;

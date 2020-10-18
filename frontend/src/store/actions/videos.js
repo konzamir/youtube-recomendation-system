@@ -8,7 +8,7 @@ const defaultHeaders = {
 
 export default {
   getMedia({ dispatch, commit, state }, payload) {
-    commit("setLoadingStatus", true);
+    // commit("setLoadingStatus", true);
 
     return axios({
       method: "post",
