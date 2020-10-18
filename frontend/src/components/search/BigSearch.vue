@@ -89,69 +89,50 @@
             return {
                 message: '',
                 descriptionLimit: 60,
-                itemText: 'Description',
-                itemValue: 'API',
+                itemText: 'name',
+                itemValue: 'id',
 
                 sources: {
                     entries: [],
                     isLoading: false,
-                    model: null,
+                    model: [],
                     search: null,
                 },
                 tags: {
                     entries: [],
                     isLoading: false,
-                    model: null,
+                    model: [],
                     search: null,
                 },
                 categories: {
                     entries: [],
                     isLoading: false,
-                    model: null,
+                    model: [],
                     search: null,
                 }
             }
         },
         computed: {
             sourceItems () {
-                return this.sources.entries.map(entry => {
-                    const Description = entry.Description.length > this.descriptionLimit
-                    ? entry.Description.slice(0, this.descriptionLimit) + '...'
-                    : entry.Description
-
-                    return Object.assign({}, entry, { Description })
-                })
+                return this.getItems(this.sources);
             },
             tagItems () {
-                return this.tags.entries.map(entry => {
-                    const Description = entry.Description.length > this.descriptionLimit
-                    ? entry.Description.slice(0, this.descriptionLimit) + '...'
-                    : entry.Description
-
-                    return Object.assign({}, entry, { Description })
-                })
+                return this.getItems(this.tags);
             },
             categoryItems () {
-                return this.categories.entries.map(entry => {
-                    const Description = entry.Description.length > this.descriptionLimit
-                    ? entry.Description.slice(0, this.descriptionLimit) + '...'
-                    : entry.Description
-
-                    return Object.assign({}, entry, { Description })
-                })
+                return this.getItems(this.categories);
             },
         },
 
         watch: {
             'sources.search' (val) {
-                if (this.sources.isLoading) return
+                if (this.sources.isLoading || !val) return
                 this.sources.isLoading = true
 
-                fetch('https://api.publicapis.org/entries')
-                    .then(res => res.json())
+                this.$store.dispatch('getSources', val)
+                    .then(res => res.data)
                     .then(res => {
-                        const { count, entries } = res
-                        this.sources.entries = entries
+                        this.sources.entries = res.data
                     })
                     .catch(err => {
                         console.log(err)
@@ -159,14 +140,13 @@
                     .finally(() => (this.sources.isLoading = false))
             },
             'tags.search' (val) {
-                if (this.tags.isLoading) return
+                if (this.tags.isLoading || !val) return
                 this.tags.isLoading = true
 
-                fetch('https://api.publicapis.org/entries')
-                    .then(res => res.json())
+                this.$store.dispatch('getTags', val)
+                    .then(res => res.data)
                     .then(res => {
-                        const { count, entries } = res
-                        this.tags.entries = entries
+                        this.tags.entries = res.data
                     })
                     .catch(err => {
                         console.log(err)
@@ -174,26 +154,33 @@
                     .finally(() => (this.tags.isLoading = false))
             },
             'categories.search' (val) {
-                if (this.categories.isLoading) return
+                if (this.categories.isLoading || !val) return
                 this.categories.isLoading = true
 
-                fetch('https://api.publicapis.org/entries')
-                    .then(res => res.json())
+                this.$store.dispatch('getCategories', val)
+                    .then(res => res.data)
                     .then(res => {
-                        const { count, entries } = res
-                        this.categories.entries = entries
+                        this.categories.entries = res.data
                     })
                     .catch(err => {
                         console.log(err)
                     })
                     .finally(() => (this.categories.isLoading = false))
             },
-            
         },
         methods: {
             submitForm(e){
                 this.sendMessage();
                 e.preventDefault();
+            },
+            getItems(obj) {
+                return obj.entries.concat(obj.model).map(entry => {
+                    const name = entry.name.length > this.descriptionLimit
+                    ? entry.name.slice(0, this.descriptionLimit) + '...'
+                    : entry.name
+
+                    return Object.assign({}, entry, { name })
+                })
             },
             sendMessage() {
                 if (this.message != ''){
