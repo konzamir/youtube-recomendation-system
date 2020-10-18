@@ -112,16 +112,15 @@
               password: this.password
             })
             .then((response) => {
-              console.log(response.data.data)
-                this.$store.commit("setUser", response.data.data);
-                this.$store.commit('setLoadingStatus', false);
-                this.close()
+              this.$store.commit("setUser", response.data.data);
+              this.$store.commit('setLoadingStatus', false);
+              this.close()
 
-                this.$parent.$parent.$refs.successDialog.show('User logined!');
+              this.$parent.$parent.$refs.successDialog.show('User logined!');
             })
             .catch((error) => {
-                this.errors = error.response.data.errors;
-                this.$store.commit('setLoadingStatus', false);
+              this.errors = error.response.data.errors;
+              this.$store.commit('setLoadingStatus', false);
             })
             
           }
