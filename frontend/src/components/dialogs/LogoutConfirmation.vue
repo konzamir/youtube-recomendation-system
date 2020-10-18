@@ -16,14 +16,14 @@
                 <v-spacer></v-spacer>
                 <v-btn 
                     flat 
-                    color="red darken-2" 
-                    @click="close"  
-                >Dismiss</v-btn>
-                <v-btn 
-                    flat 
                     color="primary" 
                     @click="confirm" 
                 >Log out</v-btn>
+                <v-btn 
+                    flat 
+                    color="red darken-2" 
+                    @click="close"  
+                >Dismiss</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
             </v-card>

@@ -3,7 +3,7 @@
         v-model="dialog"
         content-class="form-style"
         persistent
-        width="400"
+        :width="editEnabled ? 500 : 400"
     >
         <v-card class="elevation-12">
                 <v-toolbar color="grey lighten-2">
@@ -35,32 +35,102 @@
                         </v-parallax>
                         </v-layout>
                     </blockquote>
-                    <blockquote class="blockquote">
-                        <b>Email:</b> {{email}}
-                    </blockquote>
-                    <blockquote class="blockquote">
-                        <b>Username:</b> {{username}}
-                    </blockquote>
-                    <blockquote class="blockquote">
-                        <a @click.stop="getFeatured"> Get featured list ({{featuredCount}}) </a>
-                    </blockquote>
-                    <!-- <blockquote class="blockquote"> -->
+
+                    <div v-if="!editEnabled">
+                        <blockquote class="blockquote">
+                            <b>Email:</b> {{email}}
+                        </blockquote>
+                        <blockquote class="blockquote">
+                            <b>Username:</b> {{username}}
+                        </blockquote>
+                        <blockquote class="blockquote">
+                            <a @click.stop="getFeatured"> Get featured list ({{featuredCount}}) </a>
+                        </blockquote>
+                    </div>
+                    <div v-else>
+                        <v-form
+                            ref="form" 
+                            v-model="editFormValid"
+                            lazy-validation>
+                            <blockquote class="blockquote">
+                                <b>New email:</b>
+                                <v-text-field 
+                                    v-model="editableData.email"
+                                    prepend-icon="alternate_email" 
+                                    name="email" 
+                                    label="Email"
+                                    type="email"
+                                    :rules="emailRules"
+                                />
+                            </blockquote>
+                            <blockquote class="blockquote">
+                                <b>New username:</b> 
+                                <v-text-field 
+                                    v-model="editableData.username"
+                                    prepend-icon="person" 
+                                    name="username" 
+                                    label="Username"
+                                    type="text"/>
+                            </blockquote>
+                            <blockquote class="blockquote" >
+                                <b>New password:</b> <v-text-field
+                                    v-model="editableData.password"
+                                    prepend-icon="lock" 
+                                    name="password" 
+                                    label="Password" 
+                                    :rules="passwordRules"
+                                    type="password" />
+                            </blockquote>
+                        </v-form>
+                    </div>
+
+                    <blockquote class="blockquote" v-show="errors.length > 0">
                         <ul>
                         <li class="red--text subheading" v-for="err in errors">
                             {{err}}
                         </li>
                         </ul>
-                    <!-- </blockquote> -->
+                    </blockquote>
                 
                 </v-card-text>
                 <v-card-actions class="pb-2">
                     <v-spacer />
+                    <div v-if="!editEnabled">
+                    <v-btn
+                        flat 
+                        color="green darken-2" 
+                        @click="edit"
+                        :disabled="isLoading"
+                    >
+                        <b>Edit</b>
+                    </v-btn>
                     <v-btn
                         flat 
                         color="primary" 
                         @click="logout"
                         :disabled="isLoading"
-                    ><b>Log out</b></v-btn>
+                    >
+                        <b>Log out</b>
+                    </v-btn>
+                    </div>
+                    <div v-else>
+                        <v-btn
+                            flat 
+                            color="green darken-2" 
+                            @click="confirmUpdate"
+                            :disabled="isLoading"
+                        >
+                            <b>Confirm</b>
+                        </v-btn>
+                        <v-btn
+                            flat 
+                            color="red darken-2" 
+                            @click="edit"
+                            :disabled="isLoading"
+                        >
+                            <b>Cancel</b>
+                        </v-btn>
+                    </div>
                     <v-progress-circular
                     v-show="isLoading"
                     indeterminate
@@ -82,9 +152,22 @@
         data: () => {
             return {
                 errors: [],
-                username: "tempo",
+                username: "",
                 dialog: false,
-                email: "test@test.com",
+                editEnabled: false,
+                email: "",
+                editFormValid: true,
+                editableData: {
+                    username: "",
+                    email: "",
+                    password: ""
+                },
+                passwordRules: [
+                    v => v == "" || v.length >= 8 || 'Min length is 8 symbols.'
+                ],
+                emailRules: [
+                    v => v == "" ||  /.+@.+/.test(v) || 'E-mail must be valid'
+                ],
             }
         },
         computed:{
@@ -121,6 +204,24 @@
             },
             logout() {
                 this.$refs.confirmation.show();
+            },
+            edit() {
+                this.editEnabled = !this.editEnabled;
+                Object.keys(this.editableData).forEach(key => {
+                    this.editableData[key] = "";
+                });
+            },
+            confirmUpdate() {
+                if (this.$refs.form.validate()) {
+                    let payload = {}
+                    Object.keys(this.editableData).forEach(key => {
+                        if (this.editableData[key] != "" && this.editableData[key] != this[key]){
+                            payload[key] = this.editableData[key];
+                        }
+                    });
+                    
+                    console.log(payload);
+                }
             },
             show() {
                 let user = this.$store.state.user;
