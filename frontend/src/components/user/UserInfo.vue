@@ -184,6 +184,8 @@
         },
         methods: {
             getFeatured (){
+                // TODO:::find a better solution to always get 
+                // featured list
                 this.$router.push({
                     name: 'main',
                 }, () => {});

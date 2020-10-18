@@ -1,7 +1,7 @@
 <template>
 <div>
     <v-container  >
-        <big-search v-on:startSearch="startSearch" ref="bigSearch"/>
+        <big-search v-on:startSearch="startSearch" ref="bigSearch" />
         <ul>
             <li class="red--text subheading" v-for="err in errors">
                 {{err}}
@@ -56,7 +56,7 @@
     import BigSearch from '@/components/search/BigSearch';
     import SearchItem from '@/components/search/SearchItem';
     import MediaElement from '@/components/search/MediaElement';
-    
+    import FiltersBlock from '@/components/search/FiltersBlock';
 
     export default {
         data: () => {
@@ -70,19 +70,10 @@
                 fetched:                    false,
                 currPage:                   null,
                 nextPage:                   null,
-                prevPage:                   null
+                prevPage:                   null,
             }
         },
         methods: {
-            getFeatured (){
-                this.$router.push({
-                    name: 'main',
-                    query: {
-                        q: this.$store.state.gettingFeaturedKeyPhrase
-                    }
-                });
-                this.sendGettingFeatureRequest();
-            },
             showAlert(d) {
                 this.$root.$children[0].$refs.successAlert.show()
             },
@@ -156,13 +147,14 @@
                     this.fetched = true;
                 })
             },
-            startSearch(q) {
-                this.query = q;
-                if (q == this.$store.state.gettingFeaturedKeyPhrase){
-                    this.sendGettingFeatureRequest();
-                } else {
-                    this.sendRequest(null);
-                }
+            startSearch(payload) {
+                console.log(payload);
+                // this.query = q;
+                // if (q == this.$store.state.gettingFeaturedKeyPhrase){
+                //     this.sendGettingFeatureRequest();
+                // } else {
+                //     this.sendRequest(null);
+                // }
             },
             pageLoad() {
                 if (this.$route.query.q) {
@@ -185,19 +177,18 @@
                 } else {
                     this.displayReturnButton = false;
                 }
-            },
-            '$router.push': 'pageLoad'
+            }
         },
         components: {
             'big-search':       BigSearch,
             'search-item':      SearchItem,
             'media-element':    MediaElement,
+            'filters-block':    FiltersBlock
         },
         beforeRouteUpdate(to, from, next) {
             this.pageLoad();
             next();
         },
-        
         mounted() {
             this.pageLoad();
         }
