@@ -1,12 +1,12 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from "vue";
+import Router from "vue-router";
 
-import routes from '@/router/routes';
+import routes from "@/router/routes";
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
-  linkActiveClass: 'active',
-  mode: 'history',
+  linkActiveClass: "active",
+  mode: "history",
   routes
-})
+});

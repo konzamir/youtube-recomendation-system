@@ -1,6 +1,8 @@
 <template>
   <v-toolbar>
-    <v-toolbar-title class="toolbar-title">YouPlayer</v-toolbar-title>
+    <v-toolbar-title class="toolbar-title">
+      <router-link to="/" class="black--text">YouMed</router-link>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items>
       <v-btn v-show="!logined" flat @click.stop="showLoginForm">Login</v-btn>

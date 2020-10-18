@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <main-header/>
-    
     <v-content>
       <router-view />
     </v-content>
@@ -33,8 +32,8 @@ export default {
   
   name: "app",
   components: {
-    'main-footer': Footer,
-    'main-header': Header,
+    'main-footer':      Footer,
+    'main-header':      Header,
     'login-form':       LoginForm,
     'register-form':    RegisterForm,
     'user-info':        UserInfo,
