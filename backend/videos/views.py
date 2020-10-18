@@ -12,7 +12,7 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     ]
 
     def get_queryset(self):
-        # TODO:::upgrade queryset if would be necessary
+        # TODO:::upgrade queryset with prefetch_related and select_related
         return Video.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
@@ -20,7 +20,9 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         return Response({
             'data': {
-                'video': response.data
+                'video': response.data,
+                'user_marks': [],
+                'youtube_marks': [],
             }
         })
 

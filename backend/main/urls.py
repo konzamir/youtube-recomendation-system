@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.http import JsonResponse
 
 
+# TODO:::clarify this method and move it into the accounts
 def test(request, *args, **kwargs):
     return JsonResponse({
         'args': args,
