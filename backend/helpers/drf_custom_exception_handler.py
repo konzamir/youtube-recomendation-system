@@ -1,5 +1,5 @@
 from django.http import Http404
-from rest_framework import exceptions
+from rest_framework import exceptions, serializers, status
 from rest_framework.response import Response
 from django.core.exceptions import PermissionDenied
 from rest_framework.views import set_rollback
@@ -23,13 +23,10 @@ def drf_custom_exception_handler(exc, context):
             "errors": []
         }
 
-        if isinstance(exc.detail, (list,)):
+        if isinstance(exc.detail, (dict,)):
             data['errors'] = exc.detail
-        elif isinstance(exc.detail, (dict,)):
-            for key, value in exc.detail.items():
-                data['errors'].append({key: value})
         else:
-            data['errors'] = [exc.detail]
+            data['errors'] = {'msg': exc.detail}
 
         set_rollback()
         return Response(data, status=exc.status_code, headers=headers)

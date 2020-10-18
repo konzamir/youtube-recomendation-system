@@ -152,10 +152,8 @@
         data: () => {
             return {
                 errors: [],
-                username: "",
                 dialog: false,
                 editEnabled: false,
-                email: "",
                 editFormValid: true,
                 editableData: {
                     username: "",
@@ -176,6 +174,12 @@
             },
             featuredCount() {
                 return this.$store.state.user.links.length;
+            },
+            username() {
+                return this.$store.state.user.username;
+            },
+            email() {
+                return this.$store.state.user.email;
             }
         },
         methods: {
@@ -212,6 +216,7 @@
                 });
             },
             confirmUpdate() {
+                this.errors = [];
                 if (this.$refs.form.validate()) {
                     let payload = {}
                     Object.keys(this.editableData).forEach(key => {
@@ -219,14 +224,20 @@
                             payload[key] = this.editableData[key];
                         }
                     });
-                    
-                    console.log(payload);
+                    this.$store.commit('setLoadingStatus', true);
+                    this.$store.dispatch('updateUser', payload).then(response => {
+                        this.$store.commit('setLoadingStatus', false);
+                        this.$store.commit("updateUser", response.data.data);
+                        this.editEnabled = false;
+                    }).catch(err => {
+                        let errors = err.response.data.errors;
+                        Object.keys(errors).forEach(key => {
+                            this.errors.push(`${key} - ${errors[key][0]}`)
+                        })
+                    })
                 }
             },
             show() {
-                let user = this.$store.state.user;
-                this.username = user.username;
-                this.email = user.email;
                 this.dialog = !this.dialog;
             },
         },

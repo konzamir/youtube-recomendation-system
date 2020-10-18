@@ -2,7 +2,8 @@
     <v-dialog
         v-model="dialog"
         content-class="form-style"
-        persistent 
+        persistent
+        width="400"
     >
         <v-card class="elevation-12">
               <v-toolbar color="grey lighten-2">
