@@ -66,6 +66,8 @@ class Video(models.Model):
 
 # TODO:::move to accounts
 class Featured(models.Model):
+    class Meta:
+        unique_together = ['video', 'user']
     video = models.ForeignKey(
         to=Video, on_delete=models.CASCADE
     )

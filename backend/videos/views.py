@@ -1,7 +1,7 @@
 from rest_framework import generics, status, permissions, mixins, viewsets
 from rest_framework.response import Response
 
-from videos.models import Video
+from videos.models import Video, Featured
 from videos.serializers import UserMarkSerializer, VideoSerializer
 
 
@@ -48,5 +48,22 @@ class UserMarkAPIView(generics.GenericAPIView):
                     user_mark,
                     context=self.get_serializer_context()
                 ).data,
+            }
+        }, status=status.HTTP_202_ACCEPTED)
+
+
+class FeaturedAPIView(generics.GenericAPIView):
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def post(self, request, video_id):
+        Featured.objects.create(
+            user_id=request.user.id,
+            video_id=video_id
+        )
+        return Response({
+            'data': {
+                'msg': 'Success creation!'
             }
         }, status=status.HTTP_202_ACCEPTED)
