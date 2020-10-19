@@ -46,22 +46,22 @@ class ProcessAPIView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewset
         process = serializer.save()
 
         with transaction.atomic():
-            for tag_id in request.data['tags']:
+            for tag in request.data['tags']:
                 ProcessTag.objects.get_or_create(
                     process_id=process.id,
-                    tag_id=tag_id
+                    tag_id=tag['id']
                 )
 
-            for category_id in request.data['categories']:
+            for category in request.data['categories']:
                 ProcessCategory.objects.get_or_create(
                     process_id=process.id,
-                    category_id=category_id
+                    category_id=category['id']
                 )
 
-            for source_id in request.data['sources']:
+            for source in request.data['sources']:
                 ProcessSource.objects.get_or_create(
                     process_id=process.id,
-                    tag_id=source_id
+                    source_id=source['id']
                 )
 
         return Response({

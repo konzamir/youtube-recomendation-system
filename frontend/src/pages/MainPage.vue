@@ -14,12 +14,12 @@
                 </div>
                 <v-spacer />
                 <div class="pt-2">
-                    <v-btn icon class="ma-0" :disabled="prevPage == null" @click="sendRequest(prevPage)">
+                    <!-- <v-btn icon class="ma-0" :disabled="prevPage == null" @click="sendRequest(prevPage)">
                         <v-icon color="grey darken-1" medium>keyboard_arrow_left</v-icon>
                     </v-btn>
                     <v-btn icon class="ma-0" :disabled="nextPage == null" @click="sendRequest(nextPage)">
                         <v-icon color="grey darken-1" medium>keyboard_arrow_right</v-icon>
-                    </v-btn>
+                    </v-btn> -->
                 </div>
             </v-layout>
             
@@ -67,10 +67,7 @@
                 items:                      [],
                 errors:                     [],
                 query:                      "",
-                fetched:                    false,
-                currPage:                   null,
-                nextPage:                   null,
-                prevPage:                   null,
+                fetched:                    false
             }
         },
         methods: {
@@ -106,39 +103,35 @@
                     this.fetched = true;
                 });
             },
-            sendRequest(pageToken){
-                let payload = {
-                    q: this.query
-                }
-                if (pageToken){
-                    payload['page_token'] = pageToken;
-                    this.$router.push({
-                        path: '/',
-                        query: {
-                            q: this.query,
-                            p: pageToken
-                        }
-                    }, () => {})
-                } else {
-                    this.$router.push({
-                        path: '/',
-                        query: {
-                            q: this.query
-                        }
-                    }, () => {})
-                }
+            sendRequest(payload){
+                // let payload = {
+                //     q: this.query
+                // }
+                // if (pageToken){
+                //     payload['page_token'] = pageToken;
+                //     this.$router.push({
+                //         path: '/',
+                //         query: {
+                //             q: this.query,
+                //             p: pageToken
+                //         }
+                //     }, () => {})
+                // } else {
+                //     this.$router.push({
+                //         path: '/',
+                //         query: {
+                //             q: this.query
+                //         }
+                //     }, () => {})
+                // }
                 this.$root.$children[0].$refs.bigProcess.show();
                 
-                this.$store.dispatch('getMedia', payload)
+                this.$store.dispatch('startProcess', payload)
                 .then((response) => {
                     this.$root.$children[0].$refs.bigProcess.close();
 
-                    this.currPage = response.data.data.request_data.curr_page;
-                    this.prevPage = response.data.data.request_data.prev_page;
-                    this.nextPage = response.data.data.request_data.next_page;
-                    
-                    this.items = response.data.data.links;
-
+                    console.log(response.data)
+                    // this.process = response.data.data.process;
                     this.fetched = true;
                 })
                 .catch((err) => {
@@ -148,7 +141,7 @@
                 })
             },
             startSearch(payload) {
-                console.log(payload);
+                this.sendRequest(payload);
                 // this.query = q;
                 // if (q == this.$store.state.gettingFeaturedKeyPhrase){
                 //     this.sendGettingFeatureRequest();
@@ -164,8 +157,6 @@
                     if (this.query == this.$store.state.gettingFeaturedKeyPhrase){
                         this.$refs.bigSearch.setMessage(this.query);
                         this.sendGettingFeatureRequest();
-                    } else {
-                        this.sendRequest(this.$route.query.p);
                     }
                 }
             }
