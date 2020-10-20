@@ -36,7 +36,7 @@
                 class="fill-height"
                 align-content="center"
                 justify="center"
-                v-show="successStatuses.indexOf(process.status) == -1"
+                v-show="!successStatuses.includes(process.status)"
             >
                 <v-col
                     class="headline text-center"
@@ -54,7 +54,7 @@
                 </v-col>
             </v-row>
 
-            <div v-show="successStatuses.indexOf(process.status) > -1">
+            <div v-show="successStatuses.includes(process.status)">
                 <v-layout row wrap v-if="this.videos.length > 0">
                     <search-item v-for="video in this.videos" :key="video.video_id"
                         :video="video"/>    
@@ -113,7 +113,7 @@
                                 });
                         }
                         
-                        if (this.successStatuses.indexOf(this.process.status) == -1) {
+                        if (!this.successStatuses.includes(this.process.status)) {
                             this.executePolling();
                         } else if (this.videos.length == 0 && this.process.next_process != undefined) {
                             this.getOtherProcess(this.process.next_process);
@@ -156,7 +156,7 @@
         mounted() {
             this.process = this.$store.state.process;
 
-            if (this.successStatuses.indexOf(this.process.status) == -1) {
+            if (!this.successStatuses.includes(this.process.status)) {
                 this.executePolling();
             } else if (this.videos.length == 0) {
                 this.getOtherProcess(this.process.id);

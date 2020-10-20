@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const urlEntripoint = "http://localhost:8000/api";
+const urlEntripoint = "http://localhost:8000/api/videos";
 
 const defaultHeaders = {
   "Content-Type": "application/json"
@@ -17,7 +17,7 @@ export default {
       headers: defaultHeaders
     });
   },
-  addFeatured({ dispatch, commit, state }, payload) {
+  addFeatured({ dispatch, commit, state }, videoId) {
     const token = state.user.token;
     let headers = {
       Authorization: `Token ${token}`,
@@ -26,14 +26,13 @@ export default {
 
     return axios({
       method: "post",
-      url: `${urlEntripoint}/featured/`,
-      data: payload,
+      url: `${urlEntripoint}/${videoId}/featured/`,
       headers: headers
     }).then(response => {
-      commit("addFeatured", payload.video_id);
+      commit("addFeatured", videoId);
     });
   },
-  removeFeatured({ dispatch, commit, state }, payload) {
+  removeFeatured({ dispatch, commit, state }, videoId) {
     const token = state.user.token;
     let headers = {
       Authorization: `Token ${token}`,
@@ -42,11 +41,10 @@ export default {
 
     return axios({
       method: "delete",
-      url: `${urlEntripoint}/featured/`,
-      data: payload,
+      url: `${urlEntripoint}/${videoId}/featured/`,
       headers: headers
     }).then(response => {
-      commit("removeFeatured", payload.video_id);
+      commit("removeFeatured", videoId);
     });
   },
   getFeaturedList({ dispatch, commit, state }) {

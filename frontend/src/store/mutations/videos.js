@@ -1,12 +1,4 @@
 export default {
-  setRequestData(state, payload) {
-    state.setRequestData = {
-      currPageToken: payload.curr_page,
-      nextPageToken: payload.next_page,
-      prevPageToken: payload.prev_page,
-      data: payload.data
-    };
-  },
   removeFeatured(state, videoId) {
     var arr = state.user.links;
     var index = arr.indexOf(videoId);

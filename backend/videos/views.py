@@ -57,13 +57,28 @@ class FeaturedAPIView(generics.GenericAPIView):
         permissions.IsAuthenticated
     ]
 
-    def post(self, request, video_id):
-        Featured.objects.create(
-            user_id=request.user.id,
-            video_id=video_id
+    def post(self, request, video_id, *args, **kwargs):
+        created, _ = Featured.objects.get_or_create(
+            video_id=video_id,
+            user_id=request.user.id
         )
+
         return Response({
             'data': {
-                'msg': 'Success creation!'
+                'featured': {
+                    'id': created.id,
+                    'video_id': video_id,
+                    'user_id': request.user.id
+                }
             }
-        }, status=status.HTTP_202_ACCEPTED)
+        }, status.HTTP_201_CREATED)
+
+    def delete(self, request, video_id, *args, **kwargs):
+        Featured.objects.filter(
+            video_id=video_id,
+            user_id=request.user.id
+        ).delete()
+
+        return Response({
+            'data': {}
+        }, status=status.HTTP_204_NO_CONTENT)

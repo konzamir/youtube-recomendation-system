@@ -87,18 +87,14 @@
             },
             sendFeaturedRequest(){
                 const videoId = this.$props.video.id;
-                const payload = {
-                    video_id: videoId
-                };
 
                 if (this.featured){
                     if (!this.$store.state.user.links.includes(videoId))
                     {
-                        this.$store.dispatch('addFeatured', payload)
+                        this.$store.dispatch('addFeatured', videoId)
                         .catch((err) => {
                             this.featured = !this.featured;
                             console.log(err);
-                            this.sendErrorMessage(err.response.data.errors[0]);
                         });
                     }
                 } else {
@@ -106,11 +102,10 @@
                     var index = arr.indexOf(videoId);
                     
                     if (index > -1) {
-                        this.$store.dispatch('removeFeatured', payload)
+                        this.$store.dispatch('removeFeatured', videoId)
                         .catch((err) => {
                             this.featured = !this.featured;
                             console.log(err);
-                            this.sendErrorMessage(err.response.data.errors[0]);
                         });
                     }
                 }
@@ -120,9 +115,15 @@
                     this.featured = !this.featured;
                     const videoId = this.$props.video.video_id;
 
+                    if (this.featured) {
+                        this.$store.commit("addFeatured", videoId);
+                    } else {
+                        this.$store.commit("removeFeatured", videoId);
+                    }
+
                     clearInterval(this.interval);
                     this.interval = setInterval(() => {
-                        // this.sendFeaturedRequest();
+                        this.sendFeaturedRequest();
                         clearInterval(this.interval);
                     }, this.sendingRequestDelay);
                 } else {
