@@ -17,7 +17,7 @@
                     <v-icon color="grey darken-1" medium>clear</v-icon>
                 </v-btn>
                 </v-toolbar>
-                <v-card-text class="pb-0">
+                <v-card-text class="pb-0 pt-3">
                     <blockquote class="blockquote pl-0 ">
                         <v-layout justify-center row>
                         <v-parallax
@@ -93,11 +93,12 @@
                     </blockquote>
                 
                 </v-card-text>
-                <v-card-actions class="pb-2">
+                <v-card-actions class="pb-4">
                     <v-spacer />
                     <div v-if="!editEnabled">
                     <v-btn
-                        flat 
+                        outlined
+                        width="100" 
                         color="green darken-2" 
                         @click="edit"
                         :disabled="isLoading"
@@ -105,7 +106,8 @@
                         <b>Edit</b>
                     </v-btn>
                     <v-btn
-                        flat 
+                        outlined
+                        width="100" 
                         color="primary" 
                         @click="logout"
                         :disabled="isLoading"
@@ -115,7 +117,8 @@
                     </div>
                     <div v-else>
                         <v-btn
-                            flat 
+                            outlined
+                            width="100" 
                             color="green darken-2" 
                             @click="confirmUpdate"
                             :disabled="isLoading"
@@ -123,7 +126,8 @@
                             <b>Confirm</b>
                         </v-btn>
                         <v-btn
-                            flat 
+                            outlined
+                            width="100" 
                             color="red darken-2" 
                             @click="edit"
                             :disabled="isLoading"

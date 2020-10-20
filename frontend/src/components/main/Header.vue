@@ -1,17 +1,19 @@
 <template>
-  <v-toolbar>
-    <v-toolbar-title class="toolbar-title">
-      <router-link to="/" class="black--text">YouMed</router-link>
-    </v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-toolbar-items>
-      <v-btn v-show="!logined" flat @click.stop="showLoginForm">Login</v-btn>
-      <v-btn v-show="!logined" flat @click.stop="showRegisterForm">Register</v-btn>
-      <v-btn v-show="logined" flat color="primary" @click.stop="showUserInfo">
-        <v-icon>person</v-icon> {{username}}
-      </v-btn>
-    </v-toolbar-items>
-  </v-toolbar>
+  <v-card>
+    <v-toolbar>
+      <v-toolbar-title class="toolbar-title">
+        <router-link to="/" class="black--text font-weight-medium">YouMed</router-link>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn v-show="!logined" text @click.stop="showLoginForm">Login</v-btn>
+        <v-btn v-show="!logined" text @click.stop="showRegisterForm">Register</v-btn>
+        <v-btn v-show="logined" text color="primary" @click.stop="showUserInfo">
+          <v-icon>person</v-icon> {{username}}
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+  </v-card>
 </template>
 
 <script>

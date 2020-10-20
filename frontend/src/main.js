@@ -13,9 +13,14 @@ import "./styles/main.scss";
 Vue.use(Vuetify);
 Vue.use(VueYouTubeEmbed);
 
+const opts = {};
+
+const vuetify = new Vuetify(opts);
+
 new Vue({
   el: "#app",
   render: h => h(App),
   router,
-  store
+  store,
+  vuetify
 });

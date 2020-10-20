@@ -9,7 +9,7 @@
               <v-toolbar color="grey lighten-2">
                 <v-toolbar-title>Login form</v-toolbar-title>
               </v-toolbar>
-              <v-card-text>
+              <v-card-text class="pt-5 pb-0">
                 <v-form
                   ref="form" 
                   v-model="valid"
@@ -38,17 +38,19 @@
                   </li>
                 </ul>
               </v-card-text>
-              <v-card-actions>
+              <v-card-actions class="pb-4 pr-5">
                 <v-spacer></v-spacer>
                 <v-btn 
-                  flat 
+                  outlined
                   color="red darken-2" 
+                  width="100"
                   @click="close"
                   :disabled="isLoading"
                 >Dismiss</v-btn>
                 <v-btn 
-                  flat 
+                  outlined 
                   color="green darken-1" 
+                  width="100"
                   @click="handleData"
                   :disabled="!valid || isLoading"
                 >Login</v-btn>

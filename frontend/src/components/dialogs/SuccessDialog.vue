@@ -10,13 +10,13 @@
                     Success!
                 </v-toolbar-title>
               </v-toolbar>
-              <v-card-text class="subheading">
+              <v-card-text class="subtitle-1 pt-3 pb-0">
                   {{detail}}
               </v-card-text>
-              <v-card-actions>
+              <v-card-actions class="pb-4 pr-5">
                 <v-spacer></v-spacer>
                 <v-btn 
-                    flat 
+                    outlined 
                     color="green darken-1" 
                     @click="close" 
                     icon

@@ -9,18 +9,17 @@
               <v-toolbar color="grey lighten-2">
                 <v-toolbar-title>Are you sure to logout?</v-toolbar-title>
               </v-toolbar>
-              <v-card-text>
-
-              </v-card-text>
-              <v-card-actions>
+              <v-card-actions class="pb-4 pr-5">
                 <v-spacer></v-spacer>
                 <v-btn 
-                    flat 
+                    outlined
+                    width="100" 
                     color="primary" 
                     @click="confirm" 
                 >Log out</v-btn>
                 <v-btn 
-                    flat 
+                    outlined
+                    width="100" 
                     color="red darken-2" 
                     @click="close"  
                 >Dismiss</v-btn>
