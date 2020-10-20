@@ -18,5 +18,6 @@ export default {
     state.user.id = payload.user.id;
     state.user.links = payload.links;
     state.user.token = payload.token;
+    state.user.youtube_link = payload.youtube_link;
   }
 };

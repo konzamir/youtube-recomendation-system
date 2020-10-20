@@ -1,5 +1,4 @@
 <template>
-    
     <v-flex xs12 sm6 md4 lg3 class="pa-1">
         <v-hover>
         <v-card 
@@ -10,14 +9,22 @@
             <v-img
                 class="white--text search-item-img"
                 height="200px"
-                :src="$props.item.preview_url"
-                @click.stop="showDialog"
+                :src="$props.video.youtube_data.image_preview.link"
+                @click.stop="showInfoPage"
                 >
-                <v-container fluid pt-1 pr-1>
+                <v-container fluid pt-1 pr-4>
                     <v-layout justify-end row>
-                        
-                        <v-btn icon dark @click.stop="addFeatured">
-                            <v-icon :color="featured ? 'red' : 'white'" medium>favorite</v-icon>
+                        <v-btn 
+                            fab
+                            elevation="5" 
+                            @click.stop="addFeatured"
+                            width="45"
+                            height="45"
+                        >
+                            <v-icon 
+                                :color="featured ? 'red' : 'grey lighten-1'" 
+                                x-large 
+                            >favorite</v-icon>
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -25,10 +32,10 @@
             <v-card-title>
                 <div>
                     <span class="font-weight-regular" :class="titleClass"> 
-                        <a @click.stop="showDialog">{{$props.item.title}}</a>
+                        <a @click.stop="showInfoPage">{{sliceStr($props.video.title)}}</a>
                     </span>
                     <br>
-                    <span class="grey--text">Number 10</span><br>
+                    <span class="grey--text">{{sliceStr($props.video.description)}}</span><br>
                 </div>
             </v-card-title>
         </v-card>
@@ -40,22 +47,23 @@
 <script>
     export default {
         beforeMount(){
-            const videoId = this.$props.item.video_id;
+            const videoId = this.$props.video.id;
             const feturedList = this.$store.state.user.links;
             this.featured = feturedList.includes(videoId);
         },
-        props: ['item'],
+        props: ['video'],
         data: () => {
             return {
-                dialog:                 false,
-                featured:               false,
-                interval:               null,
-                sendingRequestDelay:    1000
+                dialog: false,
+                featured: false,
+                interval: null,
+                sendingRequestDelay: 1000,
+                descriptionLimit: 70
             }
         },
         computed: {
             titleClass(){
-                const titleLength = this.$props.item.title.length;
+                const titleLength = this.$props.video.title.length;
 
                 if (titleLength > 30) {
                     return 'subheading';
@@ -68,12 +76,17 @@
         components: {
         },
         methods: {
-            showDialog() {
-                this.$parent.$refs.media.title=this.$props.item.title;
-                this.$parent.$refs.media.show(this.$props.item.video_id);
+            sliceStr(textData) {
+                return textData.length > this.descriptionLimit
+                    ? textData.slice(0, this.descriptionLimit) + '...'
+                    : textData
+            },
+            showInfoPage() {
+                // this.$parent.$refs.media.title=this.$props.video.title;
+                // this.$parent.$refs.media.show(this.$props.video.video_id);
             },
             sendFeaturedRequest(){
-                const videoId = this.$props.item.video_id;
+                const videoId = this.$props.video.id;
                 const payload = {
                     video_id: videoId
                 };
@@ -105,11 +118,11 @@
             addFeatured(){
                 if (this.$store.state.user.token){
                     this.featured = !this.featured;
-                    const videoId = this.$props.item.video_id;
+                    const videoId = this.$props.video.video_id;
 
                     clearInterval(this.interval);
                     this.interval = setInterval(() => {
-                        this.sendFeaturedRequest();
+                        // this.sendFeaturedRequest();
                         clearInterval(this.interval);
                     }, this.sendingRequestDelay);
                 } else {

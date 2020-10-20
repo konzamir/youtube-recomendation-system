@@ -34,10 +34,10 @@ class GetUpdateUserAPIView(mixins.RetrieveModelMixin,
     queryset = User.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
-        response = super().retrieve(request, *args, **kwargs)
+        response = super(GetUpdateUserAPIView, self).retrieve(request, *args, **kwargs)
 
         featured_list = [
-            x.link.video_id for x in Featured.objects.filter(user=request.user)
+            x.video_id for x in Featured.objects.filter(user=request.user.id).all()
         ]
 
         return Response({
@@ -144,7 +144,7 @@ class LoginAPIView(generics.GenericAPIView):
         user = serializer.validated_data
 
         featured_list = [
-            x.video for x in Featured.objects.filter(user=request.user.id)
+            x.video_id for x in Featured.objects.filter(user=user.id).all()
         ]
 
         return Response({

@@ -1,6 +1,6 @@
 <template>
 <div>
-    <v-container  >
+    <v-container>
         <big-search v-on:startSearch="startSearch" ref="bigSearch" />
         <ul>
             <li class="red--text subheading" v-for="err in errors">
@@ -55,70 +55,34 @@
             </v-row>
 
             <div v-show="successStatuses.indexOf(process.status) > -1">
-                <v-layout row wrap v-scroll="onScroll" v-if="this.items.length > 0">
-                    <search-item v-for="item in this.items" :key="item.video_id"
-                        :item="item"/>    
+                <v-layout row wrap v-if="this.videos.length > 0">
+                    <search-item v-for="video in this.videos" :key="video.video_id"
+                        :video="video"/>    
                 </v-layout>
-                <v-layout row wrap justify-center v-scroll="onScroll" v-else class="headline pt-2">
-                    No media were found for current group!
-                </v-layout>
-
-                <v-layout row wrap justify-center v-scroll="onScroll" class="pt-2">
-                    <v-btn dark color="primary lighten-1">Get next group</v-btn>
+                <v-layout row wrap justify-center v-else class="headline pt-2">
+                    No media were found!
                 </v-layout>
             </div>
 
-            <v-btn
-                v-show="displayReturnButton"
-                fixed
-                dark
-                fab
-                bottom
-                right
-                color="grey lighten-1"
-                @click="returnToTop"
-            >
-                <v-icon color="black" large>keyboard_arrow_up</v-icon>
-            </v-btn>
-
         </v-container>
     </v-container>
-    <media-element ref="media"/>
-    
-
   </div>  
 </template>
 
 <script>
     import BigSearch from '@/components/search/BigSearch';
     import SearchItem from '@/components/search/SearchItem';
-    import MediaElement from '@/components/search/MediaElement';
     import FiltersBlock from '@/components/search/FiltersBlock';
 
     export default {
         data: () => {
             return {
-                displayReturnButtonValue: 200,
-                displayReturnButton: false,
-                offsetTop: 0,
-                items: [],
+                videos: [],
                 errors: [],
 
-                pollingInterval: 2000,
+                pollingInterval: 2000, // 2 seconds
 
-                process: {
-                    "id": 1,
-                    "status": 3,
-                    "youtube_video_group": null,
-                    "active": true,
-                    "search_data": "Test search§",
-                    "invalid_msg": null,
-                    "next_process": 2,
-                    "prev_process": null,
-                    "updated_at": "2020-10-20T19:46:24.159578Z",
-                    "created_at": "2020-10-11T19:34:52.138086Z",
-                    "user": 1
-                },
+                process: {},
                 processStatusesLabels: {
                     0: "Waiting for fetching base data...",
                     1: "Waiting for fetching full data...",
@@ -133,23 +97,26 @@
             showAlert(d) {
                 this.$root.$children[0].$refs.successAlert.show()
             },
-            onScroll (e) {
-                this.offsetTop = window.pageYOffset || document.documentElement.scrollTop
-            },
-            returnToTop() {
-                this.$vuetify.goTo(0, {
-                    duration: 200,
-                    offset: 0,
-                    easing: 'linear'
-                });
-            },
-            getOtherProcess(process_id) {
-                this.$store.dispatch('getProcess', this.process.id)
+            setProcessFromAPI(process_id) {
+                this.$store.dispatch('getProcess', process_id)
                     .then(response => {
                         this.process = response.data.data.process;
+                        this.$store.commit('setProcess', this.process);
+
+                        this.videos = response.data.data.videos;
+
+                        if (!this.process.active) {
+                            this.$store.dispatch('setProcessActive', process_id)
+                                .catch(err => {
+                                    this.process = {}
+                                    this.errors = err.response.data.errors;
+                                });
+                        }
                         
                         if (this.successStatuses.indexOf(this.process.status) == -1) {
                             this.executePolling();
+                        } else if (this.videos.length == 0 && this.process.next_process != undefined) {
+                            this.getOtherProcess(this.process.next_process);
                         }
                     })
                     .catch(err => {
@@ -157,20 +124,12 @@
                         this.errors = err.response.data.errors;
                     });
             },
+            getOtherProcess(process_id) {
+                this.setProcessFromAPI(process_id);
+            },
             executePolling() {
                 setTimeout(() => {
-                    this.$store.dispatch('getProcess', this.process.id)
-                        .then(response => {
-                            this.process = response.data.data.process;
-                            
-                            if (this.successStatuses.indexOf(this.process.status) == -1) {
-                                this.executePolling();
-                            }
-                        })
-                        .catch(err => {
-                            this.process = {}
-                            this.errors = err.response.data.errors;
-                        });
+                    this.setProcessFromAPI(this.process.id)
                 }, this.pollingInterval);
             },
             startSearch(payload){
@@ -189,23 +148,21 @@
                 })
             }
         },
-        watch:{
-            offsetTop (o, n) {
-                if (n >= this.displayReturnButtonValue) {
-                    this.displayReturnButton = true;
-                } else {
-                    this.displayReturnButton = false;
-                }
-            }
-        },
         components: {
             'big-search':       BigSearch,
             'search-item':      SearchItem,
-            'media-element':    MediaElement,
             'filters-block':    FiltersBlock
         },
         mounted() {
-            console.log(this.successStatuses)
+            this.process = this.$store.state.process;
+
+            if (this.successStatuses.indexOf(this.process.status) == -1) {
+                this.executePolling();
+            } else if (this.videos.length == 0) {
+                this.getOtherProcess(this.process.id);
+            } else if (this.videos.length == 0 && this.process.next_process != undefined) {
+                this.getOtherProcess(this.process.next_process);
+            }
         }
     }
 </script>

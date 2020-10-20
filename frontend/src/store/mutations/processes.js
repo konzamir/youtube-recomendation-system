@@ -1,5 +1,5 @@
 export default {
-  setProcessData(state, processData) {
-    state.process = processData;
+  setProcess(state, payload) {
+    state.process = payload;
   }
 };

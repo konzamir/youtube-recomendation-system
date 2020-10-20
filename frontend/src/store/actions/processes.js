@@ -33,8 +33,24 @@ export default {
     return axios({
       method: "get",
       url: `${urlEntripoint}/${process_id}/`,
-      headers: headers,
+      headers: headers
     });
   },
-  
+  setProcessActive({ dispatch, commit, state }, process_id) {
+    const token = state.user.token;
+
+    let headers = {
+      Authorization: `Token ${token}`,
+      ...defaultHeaders
+    };
+
+    return axios({
+      method: "patch",
+      url: `${urlEntripoint}/${process_id}/`,
+      headers: headers,
+      data: {
+        active: true
+      }
+    });
+  }
 };
