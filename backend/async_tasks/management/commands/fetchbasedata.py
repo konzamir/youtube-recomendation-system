@@ -110,7 +110,8 @@ class Command(BaseCommand):
             processes = Process.objects.prefetch_related(
                 'user__youtubecredentials'
             ).filter(
-                status=Process.ProcessStatus.WAITING_FOR_FETCHING_BASE_DATA
+                status=Process.ProcessStatus.WAITING_FOR_FETCHING_BASE_DATA,
+                active=True,
             ).all()[:PACK_SIZE]
 
             if processes:

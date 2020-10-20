@@ -10,7 +10,10 @@ from processes.models import ProcessTag, ProcessCategory, ProcessSource, \
     ProcessVideo, Process
 
 
-class ProcessAPIView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class ProcessAPIView(mixins.CreateModelMixin,
+                     mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     viewsets.GenericViewSet):
     permission_classes = [
         permissions.IsAuthenticated
     ]
@@ -39,6 +42,7 @@ class ProcessAPIView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewset
     def create(self, request, *args, **kwargs):
         process_data = request.data['process']
         process_data['user'] = request.user.id
+        process_data['active'] = True
 
         serializer = self.get_serializer(data=process_data)
         serializer.is_valid(raise_exception=True)
@@ -68,3 +72,12 @@ class ProcessAPIView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewset
                 'process': serializer.validated_data
             }
         }, status=status.HTTP_202_ACCEPTED)
+
+    def update(self, request, *args, **kwargs):
+        response = super(ProcessAPIView, self).update(request, *args, **kwargs)
+
+        return Response({
+            'data': {
+                'process': response.data
+            }
+        }, status=status.HTTP_200_OK)

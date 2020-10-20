@@ -22,7 +22,7 @@ class Process(models.Model):
     youtube_video_group = models.CharField(max_length=64, null=True, default=None)
 
     # this flag is using for starting search for current group
-    in_progress = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
 
     search_data = models.TextField(null=False)
 
