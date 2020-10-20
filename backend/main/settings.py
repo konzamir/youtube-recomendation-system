@@ -150,7 +150,7 @@ REST_FRAMEWORK = {
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOWED_ORIGINS = ('http://localhost:8000', 'http://localhost:5000', )
+CORS_ALLOWED_ORIGINS = ('http://localhost:8000', 'http://localhost:5000', 'http://localhost:5001')
 
 # YouTube
 YOUTUBE_SCOPES = [

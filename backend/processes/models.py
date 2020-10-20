@@ -6,6 +6,7 @@ from filters.models import Category, Tag, Source
 
 
 class Process(models.Model):
+
     class ProcessStatus(models.IntegerChoices):
         # TODO:::add current states for each part of processing
         WAITING_FOR_FETCHING_BASE_DATA = 0
@@ -19,7 +20,10 @@ class Process(models.Model):
         default=ProcessStatus.WAITING_FOR_FETCHING_BASE_DATA
     )
     youtube_video_group = models.CharField(max_length=64, null=True, default=None)
+
+    # this flag is using for starting search for current group
     in_progress = models.BooleanField(default=False)
+
     search_data = models.TextField(null=False)
 
     invalid_msg = models.CharField(max_length=128, null=True)

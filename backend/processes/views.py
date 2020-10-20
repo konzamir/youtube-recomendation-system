@@ -37,7 +37,6 @@ class ProcessAPIView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewset
         })
 
     def create(self, request, *args, **kwargs):
-        # TODO:::check if process already stored in the DB.
         process_data = request.data['process']
         process_data['user'] = request.user.id
 
@@ -66,6 +65,6 @@ class ProcessAPIView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewset
 
         return Response({
             'data': {
-                'process': self.get_serializer(process, context=self.get_serializer_context()).data,
+                'process': serializer.validated_data
             }
         }, status=status.HTTP_202_ACCEPTED)
