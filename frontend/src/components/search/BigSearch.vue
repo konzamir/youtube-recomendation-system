@@ -19,11 +19,10 @@
                 @click:clear="clearMessage"
             ></v-text-field>
         </v-layout>
-
         <v-layout justify-center row>
             <v-autocomplete
-                class="ma-1"
                 label="Choose sources"
+                class="search-field pl-4 pr-4"
                 chips
                 clearable
                 deletable-chips
@@ -41,8 +40,8 @@
         </v-layout>
         <v-layout justify-center row>
             <v-autocomplete
-                class="ma-1"
                 label="Choose tags"
+                class="search-field pl-4 pr-4"
                 chips
                 clearable
                 deletable-chips
@@ -60,8 +59,8 @@
         </v-layout>
         <v-layout justify-center row>
             <v-autocomplete
-                class="ma-1"
                 label="Choose categories"
+                class="search-field pl-4 pr-4"
                 chips
                 clearable
                 deletable-chips

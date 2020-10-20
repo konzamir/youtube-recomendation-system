@@ -13,14 +13,6 @@
                     Results:
                 </div>
                 <v-spacer />
-                <div class="pt-2">
-                    <!-- <v-btn icon class="ma-0" :disabled="prevPage == null" @click="sendRequest(prevPage)">
-                        <v-icon color="grey darken-1" medium>keyboard_arrow_left</v-icon>
-                    </v-btn>
-                    <v-btn icon class="ma-0" :disabled="nextPage == null" @click="sendRequest(nextPage)">
-                        <v-icon color="grey darken-1" medium>keyboard_arrow_right</v-icon>
-                    </v-btn> -->
-                </div>
             </v-layout>
             
             <v-divider color="grey" class="mb-2"/>
@@ -84,46 +76,7 @@
                     easing: 'linear'
                 });
             },
-            sendGettingFeatureRequest(){
-                this.$root.$children[0].$refs.bigProcess.show();
-                this.$store.dispatch('getFeaturedList')
-                .then((response) => {
-                    this.$root.$children[0].$refs.bigProcess.close()
-                    this.items = response.data.data.links;
-                    this.nextPage = null;
-                    this.prevPage = null;
-                    this.currPage = null;
-
-                    this.fetched = true;
-                })
-                .catch((err) => {
-                    console.log(err)
-                    this.$root.$children[0].$refs.bigProcess.close()
-                    this.errors = err.response.data.errors;
-                    this.fetched = true;
-                });
-            },
-            sendRequest(payload){
-                // let payload = {
-                //     q: this.query
-                // }
-                // if (pageToken){
-                //     payload['page_token'] = pageToken;
-                //     this.$router.push({
-                //         path: '/',
-                //         query: {
-                //             q: this.query,
-                //             p: pageToken
-                //         }
-                //     }, () => {})
-                // } else {
-                //     this.$router.push({
-                //         path: '/',
-                //         query: {
-                //             q: this.query
-                //         }
-                //     }, () => {})
-                // }
+            startSearch(payload){
                 this.$root.$children[0].$refs.bigProcess.show();
                 
                 this.$store.dispatch('startProcess', payload)
@@ -139,26 +92,6 @@
                     this.errors = err.response.data.errors;
                     this.fetched = true;
                 })
-            },
-            startSearch(payload) {
-                this.sendRequest(payload);
-                // this.query = q;
-                // if (q == this.$store.state.gettingFeaturedKeyPhrase){
-                //     this.sendGettingFeatureRequest();
-                // } else {
-                //     this.sendRequest(null);
-                // }
-            },
-            pageLoad() {
-                if (this.$route.query.q) {
-                    this.query = this.$route.query.q;
-                    this.$refs.bigSearch.setMessage(this.query);
-
-                    if (this.query == this.$store.state.gettingFeaturedKeyPhrase){
-                        this.$refs.bigSearch.setMessage(this.query);
-                        this.sendGettingFeatureRequest();
-                    }
-                }
             }
         },
         watch:{
@@ -175,13 +108,6 @@
             'search-item':      SearchItem,
             'media-element':    MediaElement,
             'filters-block':    FiltersBlock
-        },
-        beforeRouteUpdate(to, from, next) {
-            this.pageLoad();
-            next();
-        },
-        mounted() {
-            this.pageLoad();
         }
     }
 </script>

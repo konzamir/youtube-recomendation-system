@@ -184,16 +184,8 @@
         },
         methods: {
             getFeatured (){
-                // TODO:::find a better solution to always get 
-                // featured list
                 this.$router.push({
-                    name: 'main',
-                }, () => {});
-                this.$router.push({
-                    name: 'main',
-                    query: {
-                        q: this.$store.state.gettingFeaturedKeyPhrase
-                    }
+                    name: 'featured'
                 }, () => {});
                 this.close();
             },
