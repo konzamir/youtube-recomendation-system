@@ -1,7 +1,7 @@
 from rest_framework import generics, status, permissions, mixins, viewsets
 from rest_framework.response import Response
 
-from videos.models import Video, Featured
+from videos.models import Video, Featured, UserMark, YoutubeData
 from videos.serializers import UserMarkSerializer, VideoSerializer
 
 
@@ -16,13 +16,35 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         return Video.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
-        response = super(VideoAPIViewSet, self).retrieve(request, *args, **kwargs)
+        video = self.get_object()
+        serialized_data = self.get_serializer(video).data
+
+        # TODO compute middle sum value in the DB
+        user_marks = UserMark.objects.filter(video_id=video.id).values().all()
+        marks_len = len(user_marks)
+
+        try:
+            current_mark = UserMark.objects.get(user_id=request.user.id)
+            current_mark = UserMarkSerializer(current_mark).data
+        except UserMark.DoesNotExist:
+            current_mark = None
 
         return Response({
             'data': {
-                'video': response.data,
-                'user_marks': [],
-                'youtube_marks': [],
+                'video': serialized_data,
+                'current_mark': current_mark,
+                'user_marks': {
+                    'information_quality': sum([x['information_quality'] for x in user_marks]) / marks_len,
+                    'medical_practice_quality': sum([x['medical_practice_quality'] for x in user_marks]) / marks_len,
+                    'description_quality': sum([x['description_quality'] for x in user_marks]) / marks_len,
+                },
+                'youtube_marks': {
+                    'positive_mark_number': serialized_data['youtube_data']['positive_mark_number'],
+                    'negative_mark_number': serialized_data['youtube_data']['negative_mark_number'],
+                    'view_count': serialized_data['youtube_data']['view_count'],
+                    'comment_count': serialized_data['youtube_data']['comment_count'],
+
+                },
             }
         })
 
