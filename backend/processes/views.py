@@ -71,7 +71,7 @@ class ProcessAPIView(mixins.CreateModelMixin,
             'data': {
                 'process': serializer.validated_data
             }
-        }, status=status.HTTP_202_ACCEPTED)
+        }, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
         response = super(ProcessAPIView, self).update(request, *args, **kwargs)
