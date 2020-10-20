@@ -7,7 +7,12 @@
                 {{err}}
             </li>
         </ul>
-        <div v-if="this.fetched">
+
+        <div v-show="process.status != undefined && successStatuses.indexOf(process.status) == -1">
+            {{processStatusesLabels[process.status]}}
+        </div>
+
+        <div v-show="successStatuses.indexOf(process.status) > -1">
             <v-layout flex class="pt-0">
                 <div class="headline pt-2">
                     Results:
@@ -53,13 +58,23 @@
     export default {
         data: () => {
             return {
-                displayReturnButtonValue:   200,
-                displayReturnButton:        false,
-                offsetTop:                  0,
-                items:                      [],
-                errors:                     [],
-                query:                      "",
-                fetched:                    false
+                displayReturnButtonValue: 200,
+                displayReturnButton: false,
+                offsetTop: 0,
+                items: [],
+                errors: [],
+
+                pollingInterval: 2000,
+
+                process: {},
+                processStatusesLabels: {
+                    0: "Waiting for fetching base data...",
+                    1: "Waiting for fetching full data...",
+                    2: "Waiting for filtering...",
+                    3: "Success!",
+                    4: "Failed!"
+                },
+                successStatuses: [3, 4]
             }
         },
         methods: {
@@ -76,21 +91,35 @@
                     easing: 'linear'
                 });
             },
+            executePolling() {
+                setTimeout(() => {
+                    this.$store.dispatch('getProcess', this.process.id)
+                        .then(response => {
+                            this.process = response.data.data.process;
+                            
+                            if (this.successStatuses.indexOf(this.process.status) == -1) {
+                                this.executePolling();
+                            }
+                        })
+                        .catch(err => {
+                            this.process = {}
+                            this.errors = err.response.data.errors;
+                        });
+                }, this.pollingInterval);
+            },
             startSearch(payload){
                 this.$root.$children[0].$refs.bigProcess.show();
                 
                 this.$store.dispatch('startProcess', payload)
                 .then((response) => {
                     this.$root.$children[0].$refs.bigProcess.close();
-
-                    console.log(response.data)
-                    // this.process = response.data.data.process;
-                    this.fetched = true;
+                    this.process = response.data.data.process;
+                    this.executePolling();
                 })
                 .catch((err) => {
                     this.$root.$children[0].$refs.bigProcess.close();
+
                     this.errors = err.response.data.errors;
-                    this.fetched = true;
                 })
             }
         },
@@ -108,6 +137,9 @@
             'search-item':      SearchItem,
             'media-element':    MediaElement,
             'filters-block':    FiltersBlock
+        },
+        mounted() {
+            console.log(this.successStatuses)
         }
     }
 </script>
