@@ -12,22 +12,22 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     ]
 
     def get_queryset(self):
-        # TODO:::upgrade queryset with prefetch_related and select_related
-        return Video.objects.all()
+        return Video.objects.select_related('youtube_data').all()
 
     def retrieve(self, request, *args, **kwargs):
         video = self.get_object()
         serialized_data = self.get_serializer(video).data
 
-        # TODO compute middle sum value in the DB
+        # TODO:::compute middle sum value in the DB
         user_marks = UserMark.objects.filter(video_id=video.id).values().all()
-        marks_len = len(user_marks)
+        marks_len = len(user_marks) or 1
 
         try:
+            # TODO:::reduce number of requests to the DB
             current_mark = UserMark.objects.get(user_id=request.user.id)
             current_mark = UserMarkSerializer(current_mark).data
         except UserMark.DoesNotExist:
-            current_mark = None
+            current_mark = {}
 
         return Response({
             'data': {

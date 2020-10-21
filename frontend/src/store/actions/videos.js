@@ -7,14 +7,17 @@ const defaultHeaders = {
 };
 
 export default {
-  getMedia({ dispatch, commit, state }, payload) {
-    // commit("setLoadingStatus", true);
+  getVideo({ dispatch, commit, state }, videoId) {
+    const token = state.user.token;
+    let headers = {
+      Authorization: `Token ${token}`,
+      ...defaultHeaders
+    };
 
     return axios({
-      method: "post",
-      url: `${urlEntripoint}/get-media/`,
-      data: payload,
-      headers: defaultHeaders
+      method: "get",
+      url: `${urlEntripoint}/${videoId}/`,
+      headers: headers
     });
   },
   addFeatured({ dispatch, commit, state }, videoId) {

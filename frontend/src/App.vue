@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <main-header/>
-    <v-content>
+    <v-main>
       <router-view />
-    </v-content>
+    </v-main>
 
     <big-process ref="bigProcess" />
     <login-form ref="loginForm" />

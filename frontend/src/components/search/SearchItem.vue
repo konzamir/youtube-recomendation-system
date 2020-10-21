@@ -10,7 +10,7 @@
                 class="white--text search-item-img"
                 height="200px"
                 :src="$props.video.youtube_data.image_preview.link"
-                @click.stop="showInfoPage"
+                @click="showInfoPage"
                 >
                 <v-container fluid pt-1 pr-4>
                     <v-layout justify-end row>
@@ -32,7 +32,7 @@
             <v-card-title>
                 <div>
                     <span class="font-weight-regular" :class="titleClass"> 
-                        <a @click.stop="showInfoPage">{{sliceStr($props.video.title)}}</a>
+                        <a @click="showInfoPage">{{sliceStr($props.video.title)}}</a>
                     </span>
                     <br>
                     <span class="grey--text">{{sliceStr($props.video.description)}}</span><br>
@@ -58,7 +58,7 @@
                 featured: false,
                 interval: null,
                 sendingRequestDelay: 1000,
-                descriptionLimit: 70
+                descriptionLimit: 45
             }
         },
         computed: {
@@ -82,8 +82,13 @@
                     : textData
             },
             showInfoPage() {
-                // this.$parent.$refs.media.title=this.$props.video.title;
-                // this.$parent.$refs.media.show(this.$props.video.video_id);
+                this.$router.push({
+                        name: 'videoInfo',
+                        params: {
+                            id: this.$props.video.id
+                        }
+                    }
+                )
             },
             sendFeaturedRequest(){
                 const videoId = this.$props.video.id;

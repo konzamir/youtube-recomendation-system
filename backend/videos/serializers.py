@@ -43,9 +43,9 @@ class SmallVideoSerializer(serializers.ModelSerializer):
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    channel = ChannelSerializer(many=False)
+    # channel = ChannelSerializer(many=False)
     youtube_data = YoutubeDataSerializer(many=False)
-    category = CategorySerializer(many=False)
+    # category = CategorySerializer(many=False)
 
     class Meta:
         model = Video
@@ -65,7 +65,13 @@ class UserMarkSerializer(serializers.ModelSerializer):
             },
             'description_quality': {
                 'required': False
-            }
+            },
+            'video': {
+                'write_only': True
+            },
+            'user': {
+                'write_only': True
+            },
         }
 
     def validate(self, attrs):
