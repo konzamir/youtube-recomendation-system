@@ -43,7 +43,7 @@ class Video(models.Model):
         choices=VideoStatus.choices,
         default=VideoStatus.NOT_CHECKED
     )
-    practical_usage_availability = models.BooleanField(null=True)
+
     title = models.CharField(max_length=256)
     description = models.TextField()
 
@@ -92,9 +92,10 @@ class UserMark(models.Model):
     user = models.ForeignKey(
         to=User, on_delete=models.CASCADE, related_name='um_user'
     )
-    information_quality = models.IntegerField(null=True)
-    medical_practice_quality = models.IntegerField(null=True)
-    description_quality = models.IntegerField(null=True)
+    information_quality = models.FloatField(default=0, null=True)
+    medical_practice_quality = models.FloatField(default=0, null=True)
+    description_quality = models.FloatField(default=0, null=True)
+    practical_usage_availability = models.FloatField(default=0, null=True)
 
     # def __str__(self):
     #     return f'{self.user.id} -> {self.video.title}'

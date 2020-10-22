@@ -12,7 +12,6 @@ from helpers.custom_encoders import decode_str
 PACK_SIZE = 1  # Pack size for fetching processes
 BASE_DATA_STRUCTURE = {
     'videos': defaultdict(lambda: {
-        'practical_usage_availability': bool(),
         'title': str(),
         'description': str(),
 
@@ -24,6 +23,7 @@ BASE_DATA_STRUCTURE = {
             'information_quality': float(),
             'medical_practice_quality': float(),
             'description_quality': float(),
+            'practical_usage_availability': float()
         },
 
         "youtube_marks": {
@@ -53,7 +53,6 @@ class Command(BaseCommand):
         process_ids = [p['id'] for p in process_ids]
 
         data_for_fetching = dict(
-            video_practical_usage_availability=F('video__practical_usage_availability'),
             video_title=F('video__title'),
             video_description=F('video__description'),
             video_source=F('video__channel__cs_channel__source__name'),
@@ -74,6 +73,7 @@ class Command(BaseCommand):
             mark_information_quality=F('video__um_videos__information_quality'),
             mark_medical_practice_quality=F('video__um_videos__medical_practice_quality'),
             mark_description_quality=F('video__um_videos__description_quality'),
+            mark_practical_usage_availability=F('video__um_videos__practical_usage_availability'),
             mark_user_id=F('video__um_videos__user__id')
         )
         # TODO:::add fetching with parts via the limit / offset
@@ -89,9 +89,12 @@ class Command(BaseCommand):
 
     def _format_data(self, processes):
         process_video_grouped = defaultdict(lambda: BASE_DATA_STRUCTURE)
+
         information_quality_set = defaultdict(set)
         medical_practice_quality_set = defaultdict(set)
         description_quality_set = defaultdict(set)
+        practical_usage_availability_set = defaultdict(set)
+
 
         for process_data in processes:
             process_id = process_data['process_id']
@@ -156,6 +159,16 @@ class Command(BaseCommand):
                     ) / float(len(description_quality_set[video_id]) + 1)
                 description_quality_set[video_id].add(process_data['mark_user_id'])
 
+            if process_data['mark_practical_usage_availability'] is not None and \
+                    process_data['mark_practical_usage_availability'] > 0 and \
+                    process_data['mark_user_id'] not in practical_usage_availability_set:
+
+                process_video_grouped[process_id]['videos'][video_id]['marks']['practical_usage_availability'] = \
+                    (process_video_grouped[process_id]['videos'][video_id]['marks']['practical_usage_availability'] *
+                     len(practical_usage_availability_set[video_id]) + process_data['practical_usage_availability']
+                    ) / float(len(practical_usage_availability_set[video_id]) + 1)
+                practical_usage_availability_set[video_id].add(process_data['mark_user_id'])
+
         return process_video_grouped
 
     def __compare_criteria_lists(self, process_criteria: list, video_criteria: list) -> bool:
@@ -189,8 +202,7 @@ class Command(BaseCommand):
 
         for process_id, process_data in formated_data.items():
             for video_id, video_data in process_data['videos'].items():
-                if video_data['practical_usage_availability'] is False or \
-                        not self.__compare_criteria_lists(process_data['sources'], video_data['sources']) and \
+                if  not self.__compare_criteria_lists(process_data['sources'], video_data['sources']) and \
                         not self.__compare_criteria_lists(process_data['tags'], video_data['tags']) and \
                         not self.__compare_criteria_lists(process_data['categories'], video_data['categories']):
                     videos_for_filtering[process_id].add(video_id)
