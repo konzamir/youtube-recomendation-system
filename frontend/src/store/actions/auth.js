@@ -60,7 +60,6 @@ export default {
       Authorization: `Token ${token}`,
       ...defaultHeaders
     };
-    return {};
 
     return axios({
       method: "post",

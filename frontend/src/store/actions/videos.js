@@ -62,5 +62,19 @@ export default {
       url: `${urlEntripoint}/featured/`,
       headers: headers
     });
+  },
+  markVideo({ dispatch, commit, state }, { videoId, userMarks }) {
+    const token = state.user.token;
+    let headers = {
+      Authorization: `Token ${token}`,
+      ...defaultHeaders
+    };
+
+    return axios({
+      method: "post",
+      url: `${urlEntripoint}/${videoId}/setMark/`,
+      data: userMarks,
+      headers: headers
+    });
   }
 };

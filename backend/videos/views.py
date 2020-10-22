@@ -1,8 +1,20 @@
+from django.db.utils import IntegrityError
 from rest_framework import generics, status, permissions, mixins, viewsets
 from rest_framework.response import Response
 
 from videos.models import Video, Featured, UserMark, YoutubeData
 from videos.serializers import UserMarkSerializer, VideoSerializer
+
+
+def _get_quality_value(field_key, user_marks):
+    curr_len = len(
+        [x[field_key] for x in user_marks if x[field_key] > 0]
+    ) or 1
+    return round(
+        sum([x[field_key] for x in user_marks]) / curr_len,
+        2
+    )
+
 
 
 class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -20,11 +32,10 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # TODO:::compute middle sum value in the DB
         user_marks = UserMark.objects.filter(video_id=video.id).values().all()
-        marks_len = len(user_marks) or 1
 
         try:
             # TODO:::reduce number of requests to the DB
-            current_mark = UserMark.objects.get(user_id=request.user.id)
+            current_mark = UserMark.objects.get(user_id=request.user.id, video_id=video.id)
             current_mark = UserMarkSerializer(current_mark).data
         except UserMark.DoesNotExist:
             current_mark = {}
@@ -34,9 +45,10 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
                 'video': serialized_data,
                 'current_mark': current_mark,
                 'user_marks': {
-                    'information_quality': sum([x['information_quality'] for x in user_marks]) / marks_len,
-                    'medical_practice_quality': sum([x['medical_practice_quality'] for x in user_marks]) / marks_len,
-                    'description_quality': sum([x['description_quality'] for x in user_marks]) / marks_len,
+                    'information_quality': _get_quality_value('information_quality', user_marks),
+                    'medical_practice_quality': _get_quality_value('medical_practice_quality', user_marks),
+                    'description_quality': _get_quality_value('description_quality', user_marks),
+                    'practical_usage_availability': _get_quality_value('practical_usage_availability', user_marks),
                 },
                 'youtube_marks': {
                     'positive_mark_number': serialized_data['youtube_data']['positive_mark_number'],
@@ -50,26 +62,50 @@ class VideoAPIViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class UserMarkAPIView(generics.GenericAPIView):
-    serializer_class = UserMarkSerializer
     permission_classes = [
         permissions.IsAuthenticated
     ]
 
     def post(self, request, video_id):
         user_mark_data = request.data
-        user_mark_data['video'] = video_id
-        user_mark_data['user'] = request.user.id
+        user_mark_data['video_id'] = video_id
+        user_mark_data['user_id'] = request.user.id
 
-        serializer = self.get_serializer(data=user_mark_data)
-        serializer.is_valid(raise_exception=True)
-        user_mark = serializer.save()
+        if 'id' in user_mark_data and not isinstance(user_mark_data['id'], int):
+            del user_mark_data['id']
+
+        if user_mark_data.get('id'):
+            UserMark.objects.filter(id=user_mark_data['id']).update(
+                **user_mark_data
+            )
+        else:
+            try:
+                UserMark.objects.create(
+                    **user_mark_data
+                )
+            except IntegrityError:
+                UserMark.objects.filter(
+                    user_id=user_mark_data['user_id'],
+                    video_id=user_mark_data['video_id']
+                ).update(
+                    **user_mark_data
+                )
+
+        current_mark = UserMark.objects.get(
+            user_id=user_mark_data['user_id'],
+            video_id=user_mark_data['video_id']
+        )
+        user_marks = UserMark.objects.filter(video_id=video_id).values().all()
 
         return Response({
             'data': {
-                'user_mark': self.get_serializer(
-                    user_mark,
-                    context=self.get_serializer_context()
-                ).data,
+                'updated_mark': UserMarkSerializer(current_mark).data,
+                'user_marks': {
+                    'information_quality': _get_quality_value('information_quality', user_marks),
+                    'medical_practice_quality': _get_quality_value('medical_practice_quality', user_marks),
+                    'description_quality': _get_quality_value('description_quality', user_marks),
+                    'practical_usage_availability': _get_quality_value('practical_usage_availability', user_marks),
+                },
             }
         }, status=status.HTTP_202_ACCEPTED)
 

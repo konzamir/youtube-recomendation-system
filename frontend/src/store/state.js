@@ -4,7 +4,7 @@ const state = {
     id: 5,
     username: "test2",
     email: "test@test.com",
-    token: "786301a12aa324a2e5e1f454fbdc6877199b912057276cfed7d906db7fb89b22",
+    token: "6965ed4d2f93bfa36d3eb7bb2e7f05762b20175943e36f1a3c341ad22ac9eb2f",
     links: [21],
     youtube_link: ""
   },

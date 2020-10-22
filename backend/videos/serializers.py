@@ -43,9 +43,7 @@ class SmallVideoSerializer(serializers.ModelSerializer):
 
 
 class VideoSerializer(serializers.ModelSerializer):
-    # channel = ChannelSerializer(many=False)
     youtube_data = YoutubeDataSerializer(many=False)
-    # category = CategorySerializer(many=False)
 
     class Meta:
         model = Video
@@ -64,6 +62,9 @@ class UserMarkSerializer(serializers.ModelSerializer):
                 'required': False
             },
             'description_quality': {
+                'required': False
+            },
+            'practical_usage_availability': {
                 'required': False
             },
             'video': {

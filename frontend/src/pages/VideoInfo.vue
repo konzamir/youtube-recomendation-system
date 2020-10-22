@@ -92,13 +92,107 @@
                     <v-row no-gutters>
                         <v-col col="12">
                             <v-card class="pa-2" outlined tile>
-                                Practical usage availability: {{video.practical_usage_availability || "Not chosen yet"}}
+                                Practical usage availability: {{userMarks.practical_usage_availability}}
                             </v-card>
                         </v-col>
                     </v-row>
                 </v-col>
             </v-row>
             
+            <v-divider color="grey" class="mb-3 mt-3"/>
+            
+            <v-row no-gutters class="pb-5">
+                <v-col
+                    class="display-1 black--text font-weight-medium"
+                    sm="12"
+                >
+                Set your marks for this video:
+                </v-col>
+            </v-row>
+
+            <v-row no-gutters class="headline">
+                <v-col md="6">
+                    Information quality: 
+                    <v-rating
+                        background-color="warning lighten-1"
+                        color="warning"
+    
+                        half-increments
+                        hover
+                        :length="ratingMaxValue"
+                        :size="ratingSize"
+                        v-model="currentMark.information_quality"
+                    />
+                </v-col>
+                <v-col sm="12">
+                    Medical practice quality:
+                    <v-rating
+                        background-color="warning lighten-1"
+                        color="warning"
+    
+                        half-increments
+                        hover
+                        :length="ratingMaxValue"
+                        :size="ratingSize"
+                        v-model="currentMark.medical_practice_quality"
+                    />
+                </v-col>
+                <v-col sm="12">
+                    Description quality:
+                    <v-rating
+                        background-color="warning lighten-1"
+                        color="warning"
+    
+                        half-increments
+                        hover
+                        :length="ratingMaxValue"
+                        :size="ratingSize"
+                        v-model="currentMark.description_quality"
+                    />
+                </v-col>
+                <v-col sm="12">
+                    Practical usage availability:
+                    <v-rating
+                        background-color="warning lighten-1"
+                        color="warning"
+    
+                        half-increments
+                        hover
+                        :length="ratingMaxValue"
+                        :size="ratingSize"
+                        v-model="currentMark.practical_usage_availability"
+                    />
+                </v-col>
+                <v-col sm="12">
+                    <ul>
+                        <li class="red--text subheading" v-for="err in errors">
+                            {{err[0]}}
+                        </li>
+                    </ul>
+                </v-col>
+                <v-col sm="12" class="pt-5">
+                    <v-btn 
+                        outlined
+                        color="orange darken-2" 
+                        width="200"
+                        @click="clearData"
+                        :disabled="isLoading"
+                    >Discard marks</v-btn>
+                    <v-btn 
+                        outlined 
+                        color="green darken-1" 
+                        width="200"
+                        @click="handleData"
+                        :disabled="isLoading"
+                    >Apply marks</v-btn>
+                    <v-progress-circular
+                        v-show="isLoading"
+                        indeterminate
+                        color="grey darken-2"
+                    ></v-progress-circular>
+                </v-col>
+            </v-row>
+
         </v-container>
     </div>
 </template>
@@ -113,7 +207,9 @@
                     this.video = response.data.data.video;
                     this.userMarks = response.data.data.user_marks;
                     this.youtubeMarks = response.data.data.youtube_marks;
-                    this.currentMark = response.data.data.current_mark;
+                    this.loadedMark = response.data.data.current_mark;
+
+                    this.setCurrentMarkFromLoaded();
 
                     this.$root.$children[0].$refs.bigProcess.close();
                 })
@@ -124,10 +220,62 @@
                 video: {
                     youtube_data: {}
                 },
-                currentMark: {},
+                currentMark: {
+                    id: null,
+                    information_quality: 0,
+                    medical_practice_quality: 0,
+                    description_quality: 0,
+                    practical_usage_availability: 0
+                },
+                loadedMark: {},
                 userMarks: {},
                 youtubeMarks: {},
-                errors: []
+                errors: [],
+
+                ratingSize: 40,
+                ratingMaxValue: 10,
+
+                isLoading: false
+            }
+        },
+        computed: {
+            marksUpdated() {
+                return (this.currentMark.information_quality !== this.loadedMark.information_quality || 
+                this.currentMark.medical_practice_quality !== this.loadedMark.medical_practice_quality ||
+                this.currentMark.description_quality !== this.loadedMark.description_quality || 
+                this.currentMark.practical_usage_availability !== this.loadedMark.practical_usage_availability);
+            }
+        },
+        methods: {
+            setCurrentMarkFromLoaded() {
+                const defaultValue = 0;
+
+                this.currentMark.id = this.loadedMark.id || null;
+                this.currentMark.information_quality = this.loadedMark.information_quality || defaultValue;
+                this.currentMark.medical_practice_quality = this.loadedMark.medical_practice_quality || defaultValue;
+                this.currentMark.description_quality = this.loadedMark.description_quality || defaultValue;
+                this.currentMark.practical_usage_availability = this.loadedMark.practical_usage_availability || defaultValue;
+            },
+            clearData() {
+                this.setCurrentMarkFromLoaded();
+            },
+            handleData() {
+                if (this.marksUpdated){
+                    this.isLoading = true;
+                    this.$store.dispatch('markVideo', {
+                        videoId: this.video.id,
+                        userMarks: this.currentMark
+                    }).then(response => {
+                        this.loadedMark = response.data.data.updated_mark;
+                        this.setCurrentMarkFromLoaded();
+                        this.userMarks = response.data.data.user_marks;
+                        this.isLoading = false;
+                    }).catch(err => {
+                        this.errors = error.response.data.errors;
+                        this.isLoading = false;
+                    })
+                }
+                
             }
         }
     }
