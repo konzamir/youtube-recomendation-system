@@ -62,7 +62,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'main.wsgi.application'
 
-
 # Database
 DATABASES = {
     'default': {
@@ -74,7 +73,6 @@ DATABASES = {
         'PORT': 3306,
     },
 }
-
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -139,24 +137,26 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+STATIC_URL = '/admin-static/'
+STATIC_ROOT = 'static'
 
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES':
-    ('knox.auth.TokenAuthentication', ),
+        ('knox.auth.TokenAuthentication',),
     'EXCEPTION_HANDLER': 'helpers.drf_custom_exception_handler'
 }
 
-FRONTEND_HOST = "http://localhost:5000"
-FRONTEND_SUCCESS_REDIRECT = FRONTEND_HOST + '/successYouTubeAuth'
-FRONTEND_FAILED_REDIRECT = FRONTEND_HOST + '/failedYouTubeAuth'
+APP_HOST = os.getenv('APP_HOST')
+
+FRONTEND_SUCCESS_REDIRECT = f'{APP_HOST}/successYouTubeAuth'
+FRONTEND_FAILED_REDIRECT = f'{APP_HOST}/failedYouTubeAuth'
+YOUTUBE_AUTH_REDIRECT = f'{APP_HOST}/api/auth/youtubeAuth/'
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOWED_ORIGINS = (FRONTEND_HOST,)
+CORS_ALLOWED_ORIGINS = (os.getenv('APP_HOST'),)
 
 # YouTube
 YOUTUBE_SCOPES = [
@@ -172,8 +172,7 @@ YOUTUBE_SECRET = {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": os.getenv('YOUTUBE_CLIENT_SECRET'),
         "redirect_uris": [
-            "http://localhost:8000/api/auth/youtubeAuth/",
-            "http://backend:8000/api/auth/youtubeAuth/"
+            f"{APP_HOST}/api/auth/youtubeAuth/",
         ]
     }
 }

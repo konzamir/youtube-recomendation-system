@@ -80,7 +80,7 @@ class YoutubeAuthAPIView(generics.GenericAPIView):
             settings.YOUTUBE_SECRET,
             scopes=settings.YOUTUBE_SCOPES
         )
-        flow.redirect_uri = request.build_absolute_uri(reverse('confirm-youtube-auth'))
+        flow.redirect_uri = settings.YOUTUBE_AUTH_REDIRECT
         authorization_response = request.build_absolute_uri().replace('http', 'https')
 
         try:
@@ -114,7 +114,7 @@ def youtube_link_or_none(request, user) -> Union[str, None]:
         scopes=settings.YOUTUBE_SCOPES
     )
 
-    flow.redirect_uri = request.build_absolute_uri(reverse('confirm-youtube-auth'))
+    flow.redirect_uri = settings.YOUTUBE_AUTH_REDIRECT
     youtube_link = flow.authorization_url()
     client_id = parse_qs(urlparse(youtube_link[0]).query)['client_id'][0]
 
