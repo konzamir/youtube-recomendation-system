@@ -109,8 +109,6 @@ class Command(BaseCommand):
 
             video_id = process_data['video_id']
 
-            process_video_grouped[process_id]['videos'][video_id]['practical_usage_availability'] = \
-                process_data['video_practical_usage_availability']
             process_video_grouped[process_id]['videos'][video_id]['title'] = \
                 decode_str(process_data['video_title'])
             process_video_grouped[process_id]['videos'][video_id]['description'] = \
@@ -171,10 +169,17 @@ class Command(BaseCommand):
 
         return process_video_grouped
 
-    def __compare_criteria_lists(self, process_criteria: list, video_criteria: list) -> bool:
+    def __compare_criteria_lists(self, process_criteria: set, video_criteria: set) -> bool:
         """ Dummy search through the two lists because total number of elements
         will not be bigger then 100.
         """
+        process_criteria = list(process_criteria)
+        video_criteria = list(video_criteria)
+
+        if process_criteria[0] is None or video_criteria[0] is None:
+            # For cases when no criteria were chosen
+            return True
+
         for pc in process_criteria:
             if pc is None:
                 continue
@@ -202,7 +207,7 @@ class Command(BaseCommand):
 
         for process_id, process_data in formated_data.items():
             for video_id, video_data in process_data['videos'].items():
-                if  not self.__compare_criteria_lists(process_data['sources'], video_data['sources']) and \
+                if not self.__compare_criteria_lists(process_data['sources'], video_data['sources']) and \
                         not self.__compare_criteria_lists(process_data['tags'], video_data['tags']) and \
                         not self.__compare_criteria_lists(process_data['categories'], video_data['categories']):
                     videos_for_filtering[process_id].add(video_id)

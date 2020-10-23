@@ -116,7 +116,7 @@
                         if (!this.successStatuses.includes(this.process.status)) {
                             this.executePolling();
                         } else if (this.videos.length == 0 && this.process.next_process != undefined) {
-                            this.getOtherProcess(this.process.next_process);
+                            // this.getOtherProcess(this.process.next_process);
                         }
                     })
                     .catch(err => {

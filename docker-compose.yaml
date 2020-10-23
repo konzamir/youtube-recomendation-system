@@ -12,10 +12,6 @@ services:
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "3306:3306"
-    expose:
-      - "3306"
     networks:
       - youmed
     command:
@@ -25,8 +21,117 @@ services:
         "--collation-server=utf8mb4_unicode_ci",
         "--default-authentication-plugin=mysql_native_password",
       ]
+  fetchbasedata:
+    container_name: fetchbasedata_youmed
+    image: backend-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-base
+    environment:
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - APP_SECRET_KEY=${APP_SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=mysql
+      - APP_HOST=${APP_HOST}
+    networks:
+      - youmed
+    depends_on:
+      - mysql
+      - backend
+    restart: on-failure
+    entrypoint: python manage.py fetchbasedata
+  fetchfulldata:
+    container_name: fetchfulldata_youmed
+    image: backend-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-base
+    environment:
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - APP_SECRET_KEY=${APP_SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=mysql
+      - APP_HOST=${APP_HOST}
+    networks:
+      - youmed
+    depends_on:
+      - mysql
+      - backend
+    restart: on-failure
+    entrypoint: python manage.py fetchfulldata
+  filtervideos:
+    container_name: filtervideos_youmed
+    image: backend-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-base
+    environment:
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - APP_SECRET_KEY=${APP_SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=mysql
+      - APP_HOST=${APP_HOST}
+    networks:
+      - youmed
+    depends_on:
+      - mysql
+      - backend
+    restart: on-failure
+    entrypoint: python manage.py filtervideos
+  periodicdataupdate:
+    container_name: periodicdataupdate_youmed
+    image: backend-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-base
+    environment:
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - APP_SECRET_KEY=${APP_SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=mysql
+      - APP_HOST=${APP_HOST}
+    networks:
+      - youmed
+    depends_on:
+      - mysql
+      - backend
+    restart: on-failure
+    entrypoint: python manage.py periodicdataupdate
+  prepareforfiltering:
+    container_name: prepareforfiltering_youmed
+    image: backend-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-base
+    environment:
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - APP_SECRET_KEY=${APP_SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=mysql
+      - APP_HOST=${APP_HOST}
+    networks:
+      - youmed
+    depends_on:
+      - mysql
+      - backend
+    restart: on-failure
+    entrypoint: python manage.py prepareforfiltering
   backend:
-    # TODO:::add using gunicorn
     container_name: backend_youmed
     image: backend-gunicorn
     build:
@@ -40,8 +145,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - DB_HOST=mysql
-    ports:
-      - "8000:8000"
+      - APP_HOST=${APP_HOST}
     networks:
       - youmed
     depends_on:
@@ -56,7 +160,7 @@ services:
       dockerfile: Dockerfile
       target: prod-nginx
     ports:
-      - "5000:80"
+      - "80:80"
     networks:
       - youmed
     restart: on-failure

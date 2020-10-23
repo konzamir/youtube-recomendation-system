@@ -164,8 +164,8 @@ YOUTUBE_SCOPES = [
 ]
 YOUTUBE_SECRET = {
     "web": {
-        "client_id": '203276610183-ekd2kk6mv1jbbnq4160hs4erbu9ouj6g.apps.googleusercontent.com',
-        # "client_id": "920610067512-b3pn3hufg4s2utel50132rh2nr2sph04.apps.googleusercontent.com",
+        "client_id": '203276610183-ekd2kk6mv1jbbnq4160hs4erbu9ouj6g.apps.googleusercontent.com',  # youmed2
+        # "client_id": "920610067512-b3pn3hufg4s2utel50132rh2nr2sph04.apps.googleusercontent.com",  # youmed
         "project_id": "youmed-290421",
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",

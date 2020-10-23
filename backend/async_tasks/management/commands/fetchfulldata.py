@@ -11,7 +11,7 @@ from googleapiclient.discovery import build, Resource
 
 from accounts.models import YoutubeCredentials
 from helpers.user_auth_validation import is_user_youtube_auth_valid
-from processes.models import ProcessVideo
+from processes.models import ProcessVideo, Process
 from videos.models import Video, Channel, YoutubeData, TagVideo, ChannelSource
 from filters.models import Tag, Category, Source
 from helpers.custom_encoders import encode_str
@@ -61,7 +61,8 @@ class Command(BaseCommand):
             youtube_client_secret=F('process__user__youtubecredentials__client_secret'),
             youtube_client_expiry=F('process__user__youtubecredentials__expiry'),
         ).filter(
-            video__status=Video.VideoStatus.NOT_CHECKED
+            video__status=Video.VideoStatus.NOT_CHECKED,
+            # process__status=Process.ProcessStatus.WAITING_FOR_FETCHING_FULL_DATA
         ).all()[0:PACK_SIZE]
 
         return videos
@@ -81,7 +82,6 @@ class Command(BaseCommand):
         video_statistic = youtube_build.videos().list(
             part='statistics', id=data['video_hash']
         ).execute()['items'][0]['statistics']
-        print(video_statistic)
 
         # Channel data extracting
         channel_data = youtube_build.channels().list(
@@ -108,7 +108,7 @@ class Command(BaseCommand):
             },
             'channel': {
                 'details': {
-                    'description': encode_str(channel_data['description']),
+                    'description': encode_str(channel_data.get('description', '')),
                     'country': channel_data.get('country', ''),
                     'keywords': encode_str(channel_data.get('keywords', ''))
                 },

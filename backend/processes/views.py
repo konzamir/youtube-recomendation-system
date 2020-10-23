@@ -27,10 +27,10 @@ class ProcessAPIView(mixins.CreateModelMixin,
         if process.status == Process.ProcessStatus.SUCCESS:
             videos = Video.objects.filter(
                 id__in=ProcessVideo.objects.filter(
-                    process_id=process.id,
+                    process_id=3,
                     video_order__gt=0
-                ).values('video_id')
-            ).order_by('pv_videos__video_order').all()
+                ).values('video_id').order_by('video_order')
+            ).all()
 
         return Response({
             'data': {
