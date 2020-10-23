@@ -103,7 +103,6 @@
           this.$refs.form.resetValidation();
           this.errors = [];
           this.dialog = false;
-          this.$store.state.loginModal = false;
         },
         show() {
           this.dialog = !this.dialog;
@@ -118,10 +117,10 @@
               this.$store.commit("setUser", response.data.data);
               this.$store.commit('setLoadingStatus', false);
               this.close()
-
-              this.$parent.$parent.$refs.successDialog.show('User logined!');
+              // this.$parent.$parent.$refs.successDialog.show('User logined!');
             })
             .catch((error) => {
+              console.log(error)
               this.errors = error.response.data.errors;
               this.$store.commit('setLoadingStatus', false);
             })

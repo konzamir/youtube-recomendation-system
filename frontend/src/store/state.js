@@ -1,4 +1,4 @@
-const state = {
+export default {
   isLoading: false,
   user: {
     username: "",
@@ -10,5 +10,3 @@ const state = {
 
   process: {}
 };
-
-export default state;

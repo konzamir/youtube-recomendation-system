@@ -89,7 +89,7 @@
                     3: "Success!",
                     4: "Failed!"
                 },
-                successStatuses: [3, 4]
+                successStatuses: [3, 4],
             }
         },
         methods: {

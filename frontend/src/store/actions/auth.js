@@ -41,6 +41,9 @@ export default {
       url: `${urlEntripoint}/auth/register/`,
       data: payload,
       headers: defaultHeaders
+    }).then(res => {
+      dispatch("confirmYoutubeAuth", res.data.data.youtube_link);
+      return res;
     });
   },
   loginAction({ dispatch, commit, state }, payload) {
@@ -50,6 +53,9 @@ export default {
       url: `${urlEntripoint}/auth/login/`,
       data: payload,
       headers: defaultHeaders
+    }).then(res => {
+      dispatch("confirmYoutubeAuth", res.data.data.youtube_link);
+      return res;
     });
   },
   logoutAction({ dispatch, commit, state }) {
@@ -61,11 +67,19 @@ export default {
       ...defaultHeaders
     };
 
+    return;
+
     return axios({
       method: "post",
       url: `${urlEntripoint}/auth/logout/`,
       data: {},
       headers: headers
     });
+  },
+  confirmYoutubeAuth({ dispatch, commit, state }, youtube_link) {
+    if (youtube_link) {
+      window.open(youtube_link, "_blank", "width=400, height=450");
+    }
+    return;
   }
 };

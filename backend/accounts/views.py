@@ -94,11 +94,9 @@ class YoutubeAuthAPIView(generics.GenericAPIView):
             YoutubeCredentials.objects.filter(
                 client_id=credentials['client_id']
             ).update(**credentials)
-            request.session['success-youtube-auth'] = True
-            return redirect('/')
+            return redirect(settings.FRONTEND_SUCCESS_REDIRECT)
 
-        request.session['success-youtube-auth'] = False
-        return redirect('/')
+        return redirect(settings.FRONTEND_FAILED_REDIRECT)
 
 
 def youtube_link_or_none(request, user) -> Union[str, None]:

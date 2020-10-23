@@ -152,8 +152,8 @@ REST_FRAMEWORK = {
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOWED_ORIGINS = ('http://localhost:8000', 'http://localhost:5000', 'http://localhost:5001')
-
+CORS_ALLOWED_ORIGINS = (os.getenv('FRONTEND_HOST'),)
+print(CORS_ALLOWED_ORIGINS)
 # YouTube
 YOUTUBE_SCOPES = [
     'https://www.googleapis.com/auth/youtube',
@@ -172,3 +172,5 @@ YOUTUBE_SECRET = {
         ]
     }
 }
+FRONTEND_SUCCESS_REDIRECT = os.getenv('FRONTEND_HOST') + '/successYouTubeAuth'
+FRONTEND_FAILED_REDIRECT = os.getenv('FRONTEND_HOST') + '/failedYouTubeAuth'
