@@ -1,6 +1,7 @@
+const { backendHost } = require("../../../config");
 import axios from "axios";
 
-const urlEntripoint = "http://localhost:8000/api/processes";
+const urlEntripoint = backendHost + "/processes";
 
 const defaultHeaders = {
   "Content-Type": "application/json"

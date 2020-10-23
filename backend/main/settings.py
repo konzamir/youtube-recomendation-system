@@ -150,27 +150,30 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'helpers.drf_custom_exception_handler'
 }
 
+FRONTEND_HOST = "http://localhost:5000"
+FRONTEND_SUCCESS_REDIRECT = FRONTEND_HOST + '/successYouTubeAuth'
+FRONTEND_FAILED_REDIRECT = FRONTEND_HOST + '/failedYouTubeAuth'
+
 # CORS
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOWED_ORIGINS = (os.getenv('FRONTEND_HOST'),)
-print(CORS_ALLOWED_ORIGINS)
+CORS_ALLOWED_ORIGINS = (FRONTEND_HOST,)
+
 # YouTube
 YOUTUBE_SCOPES = [
     'https://www.googleapis.com/auth/youtube',
 ]
 YOUTUBE_SECRET = {
     "web": {
-        "client_id": '203276610183-ekd2kk6mv1jbbnq4160hs4erbu9ouj6g.apps.googleusercontent.com',#"920610067512-b3pn3hufg4s2utel50132rh2nr2sph04.apps.googleusercontent.com",
+        "client_id": '203276610183-ekd2kk6mv1jbbnq4160hs4erbu9ouj6g.apps.googleusercontent.com',
+        # "client_id": "920610067512-b3pn3hufg4s2utel50132rh2nr2sph04.apps.googleusercontent.com",
         "project_id": "youmed-290421",
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": os.getenv('YOUTUBE_CLIENT_SECRET'),
         "redirect_uris": [
-            "http://localhost:8000/",
             "http://localhost:8000/api/auth/youtubeAuth/",
+            "http://backend:8000/api/auth/youtubeAuth/"
         ]
     }
 }
-FRONTEND_SUCCESS_REDIRECT = os.getenv('FRONTEND_HOST') + '/successYouTubeAuth'
-FRONTEND_FAILED_REDIRECT = os.getenv('FRONTEND_HOST') + '/failedYouTubeAuth'

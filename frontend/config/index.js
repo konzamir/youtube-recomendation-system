@@ -5,6 +5,7 @@
 const path = require("path");
 
 module.exports = {
+  backendHost: "/api",
   dev: {
     // Paths
     assetsSubDirectory: "static",

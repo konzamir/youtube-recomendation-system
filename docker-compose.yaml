@@ -1,4 +1,4 @@
-version: '3'
+version: "3.7"
 
 services:
   mysql:
@@ -18,8 +18,48 @@ services:
       - "3306"
     networks:
       - youmed
-    command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
-
+    command:
+      [
+        "mysqld",
+        "--character-set-server=utf8mb4",
+        "--collation-server=utf8mb4_unicode_ci",
+        "--default-authentication-plugin=mysql_native_password",
+      ]
+  backend:
+    # TODO:::add using gunicorn
+    container_name: backend_youmed
+    image: backend-gunicorn
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend-gunicorn
+    environment:
+      - YOUTUBE_CLIENT_SECRET=${YOUTUBE_CLIENT_SECRET}
+      - APP_SECRET_KEY=${APP_SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=mysql
+    ports:
+      - "8000:8000"
+    networks:
+      - youmed
+    depends_on:
+      - mysql
+    restart: on-failure
+  nginx:
+    container_name: nginx_youmed
+    image: prod-nginx
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod-nginx
+    ports:
+      - "5000:80"
+    networks:
+      - youmed
+    restart: on-failure
 networks:
   youmed:
     driver: bridge

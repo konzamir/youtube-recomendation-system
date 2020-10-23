@@ -1,6 +1,7 @@
+const { backendHost } = require("../../../config");
 import axios from "axios";
 
-const urlEntripoint = "http://localhost:8000/api";
+const urlEntripoint = backendHost;
 
 const defaultHeaders = {
   "Content-Type": "application/json"
@@ -47,6 +48,7 @@ export default {
     });
   },
   loginAction({ dispatch, commit, state }, payload) {
+    console.log(process.env.VUE_APP_BACKEND_HOST);
     commit("setLoadingStatus", true);
     return axios({
       method: "post",

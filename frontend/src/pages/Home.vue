@@ -1,6 +1,7 @@
 <template>
 <div>
     <v-container>
+        {{ttt}}
         <big-search v-on:startSearch="startSearch" ref="bigSearch" />
         <ul>
             <li class="red--text subheading" v-for="err in errors">
@@ -167,6 +168,13 @@
                 } else if (this.videos.length == 0 && this.process.next_process != undefined) {
                     this.getOtherProcess(this.process.next_process);
                 }
+            }
+        },
+        computed:
+        {
+            ttt(){
+                console.log(process.env.VUE_APP_BACKEND_HOST);
+                return process.env.VUE_APP_BACKEND_HOST
             }
         }
     }

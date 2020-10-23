@@ -120,9 +120,8 @@
               // this.$parent.$parent.$refs.successDialog.show('User logined!');
             })
             .catch((error) => {
-              console.log(error)
-              this.errors = error.response.data.errors;
               this.$store.commit('setLoadingStatus', false);
+              this.errors = error.response.data.errors;
             })
             
           }

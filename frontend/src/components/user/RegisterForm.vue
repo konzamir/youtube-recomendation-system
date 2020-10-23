@@ -121,14 +121,14 @@
                     password: this.password
                   })
                   .then((response) => {
-                      this.$store.commit("setUser", response.data.data);
-                      this.$store.commit('setLoadingStatus', false);
-                      this.close();
-                      // this.$parent.$parent.$refs.successDialog.show('User registered!');
+                    this.$store.commit("setUser", response.data.data);
+                    this.$store.commit('setLoadingStatus', false);
+                    this.close();
+                    // this.$parent.$parent.$refs.successDialog.show('User registered!');
                   })
                   .catch((error) => {
-                      this.errors = error.response.data.errors;
-                      this.$store.commit('setLoadingStatus', false);
+                    this.$store.commit('setLoadingStatus', false);
+                    this.errors = error.response.data.errors;
                   })
                 }
             }
