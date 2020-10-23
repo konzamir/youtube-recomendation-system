@@ -132,8 +132,13 @@
                 }, this.pollingInterval);
             },
             startSearch(payload){
+                if (!this.$store.state.user.token) {
+                    this.$root.$children[0].$refs.errorDialog.show('You must be authorized to perform this action!');
+                    return
+                }
+
                 this.$root.$children[0].$refs.bigProcess.show();
-                
+
                 this.$store.dispatch('startProcess', payload)
                 .then((response) => {
                     this.$root.$children[0].$refs.bigProcess.close();
@@ -152,14 +157,16 @@
             'search-item':      SearchItem,
         },
         mounted() {
-            this.process = this.$store.state.process;
+            if (this.$store.state.user.token && this.$store.state.process.id){
+                this.process = this.$store.state.process;
 
-            if (!this.successStatuses.includes(this.process.status)) {
-                this.executePolling();
-            } else if (this.videos.length == 0) {
-                this.getOtherProcess(this.process.id);
-            } else if (this.videos.length == 0 && this.process.next_process != undefined) {
-                this.getOtherProcess(this.process.next_process);
+                if (!this.successStatuses.includes(this.process.status)) {
+                    this.executePolling();
+                } else if (this.videos.length == 0) {
+                    this.getOtherProcess(this.process.id);
+                } else if (this.videos.length == 0 && this.process.next_process != undefined) {
+                    this.getOtherProcess(this.process.next_process);
+                }
             }
         }
     }

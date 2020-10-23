@@ -36,6 +36,12 @@ import SearchItem from '@/components/search/SearchItem';
 export default {
     
     mounted() {
+        if (!this.$store.state.user.token) {
+            this.$root.$children[0].$refs.errorDialog.show('You must be authorized to perform this action!');
+            this.$router.push('/');
+            return
+        }
+
         this.$root.$children[0].$refs.bigProcess.show();
         this.$store.dispatch('getFeaturedList').then(res => {
             console.log(res.data)

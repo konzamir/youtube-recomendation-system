@@ -69,7 +69,7 @@ class ProcessAPIView(mixins.CreateModelMixin,
 
         return Response({
             'data': {
-                'process': serializer.validated_data
+                'process': self.get_serializer(process).data
             }
         }, status=status.HTTP_201_CREATED)
 

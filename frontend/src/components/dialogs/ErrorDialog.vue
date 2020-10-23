@@ -18,7 +18,7 @@
                 <v-spacer></v-spacer>
                 <v-btn 
                     outlined
-                    width="100" 
+                    width="150" 
                     color="green darken-1" 
                     @click="close" 
                 >Understand</v-btn>
