@@ -72,7 +72,6 @@
 <script>
     import BigSearch from '@/components/search/BigSearch';
     import SearchItem from '@/components/search/SearchItem';
-    import FiltersBlock from '@/components/search/FiltersBlock';
 
     export default {
         data: () => {
@@ -151,7 +150,6 @@
         components: {
             'big-search':       BigSearch,
             'search-item':      SearchItem,
-            'filters-block':    FiltersBlock
         },
         mounted() {
             this.process = this.$store.state.process;

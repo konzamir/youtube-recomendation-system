@@ -29,7 +29,7 @@ class ProcessAPIView(mixins.CreateModelMixin,
                 id__in=ProcessVideo.objects.filter(
                     process_id=process.id,
                     video_order__gt=0
-                )
+                ).values('video_id')
             ).order_by('pv_videos__video_order').all()
 
         return Response({

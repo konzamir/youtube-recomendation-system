@@ -1,14 +1,7 @@
-import auth from './auth';
-import filters from './filters';
-import processes from './processes';
-import videos from './videos';
-
-
-const urlEntripoint = "http://localhost:8000/api";
-
-const defaultHeaders = {
-  "Content-Type": "application/json"
-};
+import auth from "./auth";
+import filters from "./filters";
+import processes from "./processes";
+import videos from "./videos";
 
 export default {
   initial({ dispatch, commit, state }) {
@@ -33,4 +26,4 @@ export default {
   ...auth,
   ...filters,
   ...processes
-}
+};

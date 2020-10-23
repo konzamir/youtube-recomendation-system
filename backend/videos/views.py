@@ -2,8 +2,8 @@ from django.db.utils import IntegrityError
 from rest_framework import generics, status, permissions, mixins, viewsets
 from rest_framework.response import Response
 
-from videos.models import Video, Featured, UserMark, YoutubeData
-from videos.serializers import UserMarkSerializer, VideoSerializer
+from videos.models import Video, Featured, UserMark
+from videos.serializers import UserMarkSerializer, VideoSerializer, SmallVideoSerializer
 
 
 def _get_quality_value(field_key, user_marks):
@@ -108,6 +108,25 @@ class UserMarkAPIView(generics.GenericAPIView):
                 },
             }
         }, status=status.HTTP_202_ACCEPTED)
+
+
+class FeaturedListAPIView(generics.GenericAPIView):
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+    def get(self, request, *args, **kwargs):
+        videos = Video.objects.filter(
+            id__in=Featured.objects.filter(
+                user_id=request.user.id,
+            ).values('video_id')
+        ).all()
+
+        return Response({
+            'data': {
+                'videos': SmallVideoSerializer(videos, many=True).data
+            }
+        })
 
 
 class FeaturedAPIView(generics.GenericAPIView):
