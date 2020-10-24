@@ -163,7 +163,10 @@ services:
       - "80:80"
     networks:
       - youmed
+    depends_on: 
+      - backend
     restart: on-failure
+
 networks:
   youmed:
     driver: bridge
