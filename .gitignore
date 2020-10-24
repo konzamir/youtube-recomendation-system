@@ -12,6 +12,8 @@
 .data/
 .data/*
 
+.env
+
 # Python
 .venv/
 .venv/*

@@ -10,6 +10,7 @@ from helpers.custom_encoders import decode_str
 
 
 PACK_SIZE = 1  # Pack size for fetching processes
+# TODO:::move to class-based objects
 BASE_DATA_STRUCTURE = {
     'videos': defaultdict(lambda: {
         'title': str(),
@@ -94,7 +95,6 @@ class Command(BaseCommand):
         medical_practice_quality_set = defaultdict(set)
         description_quality_set = defaultdict(set)
         practical_usage_availability_set = defaultdict(set)
-
 
         for process_data in processes:
             process_id = process_data['process_id']
@@ -201,7 +201,6 @@ class Command(BaseCommand):
           * sources
           * tags
           * categories
-          * medical practical usage
         """
         videos_for_filtering = defaultdict(set)
 
@@ -223,7 +222,15 @@ class Command(BaseCommand):
         """
         Criteria are:
           * user marks
+            * information quality
+            * medical practic quality
+            * description quality
+            * practical usage availability
           * youtube marks
+            * positve marks count
+            * negative marks count
+            * number of views
+            * number of comments
         """
         process_video_order = defaultdict(dict)
 
