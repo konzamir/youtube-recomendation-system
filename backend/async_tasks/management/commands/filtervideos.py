@@ -52,6 +52,8 @@ class Command(BaseCommand):
             'id'
         ).all()[:PACK_SIZE]
         process_ids = [p['id'] for p in process_ids]
+        # TODO:::add fetching featured list
+        featued_links = []
 
         data_for_fetching = dict(
             video_title=F('video__title'),
@@ -86,7 +88,7 @@ class Command(BaseCommand):
             process__id__in=process_ids
         ).all()
 
-        return processes
+        return processes, featued_links
 
     def _format_data(self, processes):
         process_video_grouped = defaultdict(lambda: BASE_DATA_STRUCTURE)
@@ -218,9 +220,11 @@ class Command(BaseCommand):
 
         return formated_data
 
-    def _sort_data(self, filtered_data: BASE_DATA_STRUCTURE) -> dict:
+    def _sort_data(self, filtered_data: BASE_DATA_STRUCTURE, featured_links: list) -> dict:
         """
         Criteria are:
+          * description availability
+          * is in featured
           * user marks
             * information quality
             * medical practic quality
@@ -239,7 +243,10 @@ class Command(BaseCommand):
                 {
                     'video_id': v_id,
                     'marks_sum': sum(
-                        list(v_data['marks'].values()) + list(v_data['youtube_marks'].values())
+                        list(v_data['marks'].values()) + 
+                        list(v_data['youtube_marks'].values()) + 
+                        (1 if v_data['description'] else 0) +
+                        int(v_id in featured_links)
                     )
                 } for v_id, v_data in process_data['videos'].items()
             ]
@@ -273,11 +280,11 @@ class Command(BaseCommand):
                 )
 
     def _handle(self):
-        processes = self._fetch_data_from_db()
+        processes, featued_links = self._fetch_data_from_db()
 
         formated_data = self._format_data(processes)
         filtered_data = self._filter_data(formated_data)
-        sorted_data = self._sort_data(filtered_data)
+        sorted_data = self._sort_data(filtered_data, featued_links)
 
         self._update_data(sorted_data)
 

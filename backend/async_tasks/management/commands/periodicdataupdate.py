@@ -20,5 +20,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         while True:
-            self._handle()
             time.sleep(SLEEP_TIME)
+            self._handle()

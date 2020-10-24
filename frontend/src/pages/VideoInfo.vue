@@ -238,7 +238,7 @@
                 errors: [],
 
                 ratingSize: 40,
-                ratingMaxValue: 10,
+                ratingMaxValue: 5,
 
                 isLoading: false
             }
