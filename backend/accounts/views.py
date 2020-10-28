@@ -24,7 +24,7 @@ from videos.models import Featured
 from helpers import is_user_youtube_auth_valid
 
 
-class GetUpdateUserAPIView(mixins.RetrieveModelMixin,
+class GetUpdateUserAPIViewSet(mixins.RetrieveModelMixin,
                            mixins.UpdateModelMixin,
                            viewsets.GenericViewSet):
     permission_classes = [
@@ -153,18 +153,6 @@ class LoginAPIView(generics.GenericAPIView):
                 'youtube_link': youtube_link_or_none(request, user)
             }
         })
-
-
-class LogoutAPIView(views.LogoutView):
-
-    def post(self, request, format=None):
-        request._auth.delete()
-        user_logged_out.send(sender=request.user.__class__, request=request, user=request.user)
-        return Response({
-            'data': {
-                'message': 'User has logged out successfully!'
-            }
-        }, status=status.HTTP_200_OK)
 
 
 class RegisterAPIView(generics.GenericAPIView):

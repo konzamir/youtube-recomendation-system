@@ -1,15 +1,8 @@
 from rest_framework import serializers
 
-from videos.models import UserMark, Channel, ImagePreview, YoutubeData, \
+from videos.models import UserMark, ImagePreview, YoutubeData, \
     Video
 from filters.serializers import CategorySerializer
-
-
-class ChannelSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Channel
-        fields = '__all__'
 
 
 class ImagePreviewSerializer(serializers.ModelSerializer):
