@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 videos_data = youtube.search().list(
                     part='snippet',
                     type='video',
-                    q='test',
+                    q=p.search_data,
                     maxResults=VIDEOS_RESULTS,
                     pageToken=p.youtube_video_group
                 ).execute()

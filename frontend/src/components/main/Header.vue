@@ -7,7 +7,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn v-show="!logined" text @click.stop="showLoginForm">Login</v-btn>
-        <!-- <v-btn v-show="!logined" text @click.stop="showRegisterForm">Register</v-btn> -->
+        <v-btn v-show="!logined" text @click.stop="showRegisterForm">Register</v-btn>
         <v-btn v-show="logined" text color="primary" @click.stop="showUserInfo">
           <v-icon>person</v-icon> {{username}}
         </v-btn>

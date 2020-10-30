@@ -94,9 +94,6 @@
             }
         },
         methods: {
-            showAlert(d) {
-                this.$root.$children[0].$refs.successAlert.show()
-            },
             setProcessFromAPI(process_id) {
                 this.$store.dispatch('getProcess', process_id)
                     .then(response => {

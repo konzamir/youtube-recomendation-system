@@ -10,7 +10,7 @@ urls_router.register(
 
 
 urlpatterns = [
-    path('register/', RegisterAPIView.as_view()),
+    # path('register/', RegisterAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
     path('auth', include('knox.urls')),
     path('user/', include(urls_router.urls)),

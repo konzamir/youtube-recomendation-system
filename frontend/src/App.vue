@@ -11,7 +11,6 @@
     <user-info ref="userInfo" />
     <error-dialog ref="errorDialog" />
     <success-dialog ref="successDialog" />
-    <success-alert ref="successAlert" />
 
     <main-footer/>
   </v-app>
@@ -26,7 +25,6 @@ import UserInfo from "@/components/user/UserInfo";
 import BigProcess from "@/components/progress/BigProcess";
 import ErrorDialog from '@/components/dialogs/ErrorDialog';
 import SuccessDialog from '@/components/dialogs/SuccessDialog';
-import SuccessAlert from '@/components/dialogs/SuccessAlert';
 
 export default {
   
@@ -39,8 +37,7 @@ export default {
     'user-info':        UserInfo,
     'big-process':      BigProcess,
     'error-dialog':     ErrorDialog,
-    'success-dialog':   SuccessDialog,
-    'success-alert':    SuccessAlert,
+    'success-dialog':   SuccessDialog
   },
 }
 </script>

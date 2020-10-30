@@ -89,7 +89,7 @@ class Command(BaseCommand):
         ).execute()['items'][0]['brandingSettings']['channel']
         source_data = youtube_build.channels().list(
             part='topicDetails', id=data['channel_hash']
-        ).execute()['items'][0]['topicDetails']
+        ).execute()['items'][0].get('topicDetails', {})
 
         return {
             'video': {
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                     'keywords': encode_str(channel_data.get('keywords', ''))
                 },
                 'sources': [
-                    encode_str(name[name.find('/wiki/') + 6:]) for name in source_data['topicCategories']
+                    encode_str(name[name.find('/wiki/') + 6:]) for name in source_data.get('topicCategories', [])
                 ]
             }
         }

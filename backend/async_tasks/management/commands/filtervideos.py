@@ -124,7 +124,7 @@ class Command(BaseCommand):
 
             process_video_grouped[process_id]['videos'][video_id]['youtube_marks'] = {
                 "positive_mark_number": process_data['youtube_positive_mark_number'],
-                "negative_mark_number": process_data['youtube_negative_mark_number'],
+                "negative_mark_number": -1 * process_data['youtube_negative_mark_number'],
                 "view_count": process_data['youtube_view_count'],
                 "comment_count": process_data['youtube_comment_count']
             }
@@ -244,10 +244,8 @@ class Command(BaseCommand):
                     'video_id': v_id,
                     'marks_sum': sum(
                         list(v_data['marks'].values()) + 
-                        list(v_data['youtube_marks'].values()) + 
-                        (1 if v_data['description'] else 0) +
-                        int(v_id in featured_links)
-                    )
+                        list(v_data['youtube_marks'].values())
+                    ) + (1 if v_data['description'] else 0) + int(v_id in featured_links)
                 } for v_id, v_data in process_data['videos'].items()
             ]
             videos = sorted(
