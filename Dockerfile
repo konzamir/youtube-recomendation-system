@@ -1,4 +1,4 @@
-FROM python:3.6 AS backend-base
+FROM python:3.8 AS backend-base
 COPY ./backend/requirements.txt /tmp/requirements.txt
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir -r /tmp/requirements.txt

@@ -6,7 +6,7 @@ from filters.models import Tag, Category, Source
 
 class Channel(models.Model):
     youtube_id = models.CharField(max_length=128)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=256)
     country = models.CharField(max_length=4)
     description = models.TextField()
     keywords = models.TextField()
