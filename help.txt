@@ -1,0 +1,9 @@
+export YOUTUBE_CLIENT_SECRET=3ZQ4VG7RY9_gkV42AmCxznpo && \
+export APP_SECRET_KEY=test-secret-key && \
+export DB_USER=user && \
+export DB_PASSWORD=test && \
+export DB_NAME=youmed && \
+export DB_HOST=127.0.0.1 \
+export APP_HOST=http://localhost
+
+export YOUTUBE_CLIENT_SECRET=kqNMIL3k-ZW2K2Z5a8in9oT3

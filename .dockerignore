@@ -1,5 +1,4 @@
-.data
-.data/*
-
 .venv
-.venv/
+frontend/node_modules
+Dockerfile
+.git
